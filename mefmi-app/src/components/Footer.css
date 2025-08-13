@@ -1,0 +1,40 @@
+:root{
+    --white: #fff;
+    --light--green: #00CD14;
+    --app--red: #ED2027; 
+    --app--green: #03A252; 
+    --app-dark--green: #002600;
+}
+
+.footer-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0px;
+    color: var(--white);
+    background-color: var(--app-dark--green);
+    width: 100%;
+}
+.footer-inner-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    padding: 3px 20px;
+    color: var(--white);
+    font-size: 10px;
+    width: 100%;
+}
+.footer-inner-container i{
+    font-size: 13px;
+}
+.footer-msg-left{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.footer-msg-right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

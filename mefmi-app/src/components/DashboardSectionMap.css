@@ -1,0 +1,238 @@
+:root{
+    --white: #fff;
+    --black: #000000;
+    --light--green: #00CD14;
+    --app--red: #ED2027; 
+    --app--green: #03A252; 
+    --app-dark--green: #002600;
+}
+
+.world-map{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 0px;
+    width: 100%;
+    
+}
+.world-map svg{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+path{
+    cursor: pointer;
+}
+path:hover{
+    fill: rgb(180, 214, 221);
+}
+
+.Angola{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Angola:hover{
+    fill: var(--app--green);
+}
+.Burundi{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Burundi:hover{
+    fill: var(--app--green);
+}
+.Eswatini{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Eswatini:hover{
+    fill: var(--app--green);
+}
+.Botswana{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Botswana:hover{
+    fill: var(--app--green);
+}
+.Kenya{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Kenya:hover{
+    fill: var(--app--green);
+}
+.Lesotho{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Lesotho:hover{
+    fill: var(--app--green);
+}
+.Malawi{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Malawi:hover{
+    fill: var(--app--green);
+}
+.Mozambique{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Mozambique:hover{
+    fill: var(--app--green);
+}
+.Namibia{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Namibia:hover{
+    fill: var(--app--green);
+}
+.Rwanda{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Rwanda:hover{
+    fill: var(--app--green);
+}
+.South-Sudan{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.South-Sudan:hover{
+    fill: var(--app--green);
+}
+.Tanzania{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Tanzania:hover{
+    fill: var(--app--green);
+}
+.Uganda{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Uganda:hover{
+    fill: var(--app--green);
+}
+.Zambia{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Zambia:hover{
+    fill: var(--app--green);
+}
+.Zimbabwe{
+    fill: var(--app-dark--green);
+    stroke: var(--white);
+}
+.Zimbabwe:hover{
+    fill: var(--app--green);
+}
+
+.angola-label{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 32%;
+    right: 46%;
+}
+.angola-label i{
+    font-size: 2px;
+    padding-left: 2px;
+    color: #ED2027;
+}
+.angola-label-inner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5px;
+    padding: 1px 2px;
+    border-radius: 1px;
+    background-color: var(--white);
+}
+
+.burundi-label{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 39.2%;
+    right: 42.3%;
+}
+.burundi-label i{
+    font-size: 2px;
+    padding-left: 1px;
+    color: #ED2027;
+}
+.burundi-label-inner{
+    font-size: 2px;
+    padding: 1px 1.5px;
+    border-radius: 1px;
+    background-color: var(--white);
+}
+.rwanda-label{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 37.7%;
+    right: 42.3%;
+}
+.rwanda-label i{
+    font-size: 2px;
+    padding-left: 1px;
+    color: #ED2027;
+}
+.rwanda-label-inner{
+    font-size: 2px;
+    padding: 1px 1.5px;
+    border-radius: 1px;
+    background-color: var(--white);
+}
+.eswatini-label{
+    position: absolute;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    bottom: 19.9%;
+    right: 40.1%;
+}
+.eswatini-label i{
+    font-size: 2px;
+    padding-right: 1px;
+    color: #ED2027;
+}
+.eswatini-label-inner{
+    font-size: 2px;
+    padding: 1px 1.5px;
+    border-radius: 1px;
+    background-color: var(--white);
+}
+.lesotho-label{
+    position: absolute;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    bottom: 17.9%;
+    right: 40.9%;
+}
+.lesotho-label i{
+    font-size: 2px;
+    padding-right: 1px;
+    color: #ED2027;
+    animation: pulse 1.3s ease-in-out infinite;
+}
+.lesotho-label-inner{
+    font-size: 2px;
+    padding: 1px 1.5px;
+    border-radius: 1px;
+    background-color: var(--white);
+}
