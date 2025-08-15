@@ -11,6 +11,7 @@ import {
   useControls,
 } from "react-zoom-pan-pinch";
 import DashboardSectionMap from "./DashboardSectionMap";
+import DashboardSectionMapAfrica from "./DashboardSectionMapAfrica";
 
 defaults.maintainAspectRatio = false;
 defaults.responsive = true;
@@ -94,33 +95,37 @@ function DashboardSection() {
             </div>
           </div>
         </div>
-        <div className="dash-card">
-          <div className="card-label">Overall Total Debt</div>
-          <div className="card-count">$1,1003,00</div>
-        </div>
-        <div className="dash-card">
-          <div className="card-label">Overall External Debt</div>
-          <div className="card-count">$1,1003,00</div>
-        </div>
-        <div className="dash-card">
-          <div className="card-label">Overall Public Debt</div>
-          <div className="card-count">$1,1003,00</div>
-        </div>
-        <div className="dash-card">
-          <div className="card-label">Overall Domestic Debt</div>
-          <div className="card-count">$1,1003,00</div>
+        <div className="dash-cards-container">
+          <div className="dash-card">
+            <div className="card-label">Overall Total Debt</div>
+            <div className="card-count">$1,1003,00</div>
+          </div>
+          <div className="dash-card">
+            <div className="card-label">Overall External Debt</div>
+            <div className="card-count">$1,1003,00</div>
+          </div>
+          <div className="dash-card">
+            <div className="card-label">Overall Public Debt</div>
+            <div className="card-count">$1,1003,00</div>
+          </div>
+          <div className="dash-card">
+            <div className="card-label">Overall Domestic Debt</div>
+            <div className="card-count">$1,1003,00</div>
+          </div>
         </div>
       </div>
       <div className="dash-container-mid">
         <div className="map-container">
           <TransformWrapper
             initialScale={1}
-            
+            initialPositionX={0} // Adjust as needed
+            initialPositionY={0} // Adjust as needed
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
                 <TransformComponent>
                   <div className="map-inner-container">
+                    {/* <DashboardSectionMapAfrica/> */}
                     <DashboardSectionMap />
                   </div>
                 </TransformComponent>
@@ -149,6 +154,9 @@ function DashboardSection() {
                   </p>
                   <div className="key-mefmi">
                     Associated with MEFMI: <i class="ri-checkbox-blank-circle-fill"></i>
+                  </div>
+                  <div className="key-africa">
+                    Rest of the Africa: <i class="ri-checkbox-blank-circle-fill"></i>
                   </div>
                   <div className="key-world">
                     Rest of the World: <i class="ri-checkbox-blank-circle-fill"></i>
@@ -180,7 +188,7 @@ function DashboardSection() {
             options={{
               plugins: {
                 title: {
-                  text: "Public Debt & overall GDP Growth",
+                  text: "Public Debt & Overall GDP Growth",
                 },
               },
             }}
@@ -261,7 +269,7 @@ function DashboardSection() {
             options={{
               plugins: {
                 title: {
-                  text: "Public and Domestic debt",
+                  text: "Public & Domestic debt",
                 },
               },
             }}

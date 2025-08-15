@@ -1,6 +1,6 @@
 .closed-chatbot{
     cursor: pointer;
-    position: absolute;
+    position: fixed;
     bottom: 10px;
     right: 20px;
     display: flex;
@@ -16,6 +16,7 @@
     border-radius: 50px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
     transition: .3s ease-in-out;
+    z-index: 998;
 }
 .closed-chatbot:hover{
     background-color: #12ff2a;
@@ -28,11 +29,11 @@
     padding-left: 10px;
 }
 .open-chatbot{
+    position: fixed;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: absolute;
     height: 83%;
     width: 45%;
     bottom: 10px;
@@ -101,7 +102,7 @@
 }
 .messenger{
     display: flex;
-    width: 400px;
+    max-width: 400px;
 }
 .messenger input{
     width: 100%;
@@ -119,4 +120,28 @@
 .messenger i{
     font-size: 20px;
     color: var(--white);
+}
+
+
+@media screen  and (max-width: 1024px){
+    .open-chatbot{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    bottom: 0px;
+    right: 0px;
+    visibility: hidden;
+    opacity: 0;
+    scale: 0.2;
+    border-radius: 5px;
+    transform-origin: bottom right;
+    background-color: var(--white);
+    color: var(--white);
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.5);
+    transition: .3s ease-in-out;
+    z-index: 9999;
+}
 }

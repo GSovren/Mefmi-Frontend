@@ -7,29 +7,37 @@
     --app-dark--green: #002600;
 }
 
-.world-map{
+.africa-map{
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0px 0px;
+    padding: 0px 100px;
     width: 100%;
-    object-fit: contain;
-
+    height: 95%;
+    
 }
-.world-map svg{
-    scale: 1.5;
-    cursor: grab;
+.africa-map svg{
     position: relative;
     width: 100%;
-    height: auto;
-    padding-bottom: 10px;
+    height: 95%;
 }
 path{
     cursor: pointer;
 }
 path:hover{
     fill: rgb(180, 214, 221);
+}
+text{
+    cursor: pointer;
+    font-size: 19px;
+    font-weight: bold;
+}
+circle{
+    cursor: pointer;
+    fill: red;
+    stroke: white;
+    stroke-width: 1;
 }
 
 .Angola{
@@ -239,12 +247,4 @@ path:hover{
     padding: 1px 1.5px;
     border-radius: 1px;
     background-color: var(--white);
-}
-
-
-
-@media screen  and (max-width: 1024px){
-    .world-map svg{
-        width: 70%;
-    }
 }

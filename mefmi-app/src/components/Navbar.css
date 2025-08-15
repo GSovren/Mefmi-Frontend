@@ -166,6 +166,13 @@
     .navbar-logo h2{
         display: none;
     }
+    .contact-info-container{
+        font-size: 10px;
+        gap: 20px;
+    }
+    .contact-info-container i{
+        font-size: 12px;
+    }
 }
 @media screen  and (max-width: 1005px){
     .menu-icon{
@@ -199,4 +206,10 @@
         border-width: 1px;
         margin-left: 0px;
     }
+    @media screen  and (max-width: 600px){
+    .mefmi-address{
+        display: none;
+    }
+
+}
 }
