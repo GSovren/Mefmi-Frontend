@@ -1,0 +1,16 @@
+:root{
+    --white: #fff;
+    --black: #000000;
+    --light--green: #00CD14;
+    --app--red: #ED2027; 
+    --app--green: #03A252; 
+    --app-dark--green: #002600;
+}
+
+.explore-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 89vh;
+    width: 100%;
+}

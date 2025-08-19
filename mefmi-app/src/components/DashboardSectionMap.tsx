@@ -709,7 +709,7 @@ function DashboardSectionMap() {
         <text
           x={1220} // offset x for label
           y={525} // offset y for label
-          style={{ fontSize: "10px", fontWeight: "bold", cursor: "pointer", fill: "white" }}
+          style={{ fontSize: "9px", fontWeight: "bold", cursor: "pointer", fill: "white" }}
           className="country-label"
           id="label-Kenya"
         >

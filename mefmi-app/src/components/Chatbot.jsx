@@ -16,7 +16,7 @@ function Chatbot() {
       <div className={display ? "open-chatbot active" : "open-chatbot"}>
         <div className="chatbot-header">
           MEMFI Chatbot{" "}
-          <i className="ri-close-circle-fill" onClick={toggleChatbot}></i>
+          <i className="ri-close-circle-line" onClick={toggleChatbot}></i>
         </div>
         <div className="chatbot-body-container">
           <div className="chatbot-body">

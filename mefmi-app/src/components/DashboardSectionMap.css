@@ -18,7 +18,8 @@
 
 }
 .world-map svg{
-    scale: 1.5;
+    scale: 1.4;
+    transform: translate(-30px, -15px);
     cursor: grab;
     position: relative;
     width: 100%;
@@ -245,6 +246,6 @@ path:hover{
 
 @media screen  and (max-width: 1024px){
     .world-map svg{
-        width: 70%;
+        width: 100%;
     }
 }

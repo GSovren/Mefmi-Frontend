@@ -7,6 +7,8 @@
 }
 
 .footer-container{
+    position: fixed;
+    bottom: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,6 +16,7 @@
     color: var(--white);
     background-color: var(--app-dark--green);
     width: 100%;
+    z-index: 998;
 }
 .footer-inner-container{
     display: flex;
@@ -32,6 +35,37 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.contact-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  overflow: hidden; /* hide overflowing content */
+}
+
+.slide-content {
+  display: inline-block;
+  white-space: nowrap;
+  /* animate along the full width of duplicated content */
+  animation: slide-left 10s linear infinite;
+}
+
+.inner-content {
+  display: inline-block;
+}
+.inner-content span {
+    padding-right: 10px;
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* move by the width of one set of content */
+    transform: translateX(-50%);
+  }
 }
 .footer-msg-right{
     display: flex;

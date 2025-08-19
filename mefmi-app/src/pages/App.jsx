@@ -1,9 +1,10 @@
 
 import React from 'react'
-import Navbar from './components/Navbar'
-import DashboardSection from './components/DashboardSection'
-import Footer from './components/Footer'
-import Chatbot from './components/Chatbot'
+import Navbar from '../components/Navbar'
+import DashboardSection from '../components/DashboardSection'
+import Footer from '../components/Footer'
+import Chatbot from '../components/Chatbot'
+
 
 function App() {
   return (
