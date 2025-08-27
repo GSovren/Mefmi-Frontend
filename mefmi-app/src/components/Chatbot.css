@@ -1,8 +1,8 @@
 .closed-chatbot{
     cursor: pointer;
     position: fixed;
-    bottom: 30px;
-    right: 20px;
+    bottom: 45px;
+    right: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,8 +36,8 @@
     align-items: center;
     height: 80%;
     width: 45%;
-    bottom: 30px;
-    right: 20px;
+    bottom: 40px;
+    right: 10px;
     visibility: hidden;
     opacity: 0;
     scale: 0.2;

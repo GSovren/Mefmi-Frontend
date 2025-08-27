@@ -1,20 +1,21 @@
+
 import React from 'react'
-import Navbar from '../components/Navbar'
-import ExploreSection from '../components/ExploreSection'
-import Footer from '../components/Footer'
 import ScrollToTop from '../components/ScrollToTop'
 import Chatbot from '../components/Chatbot'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import UploadSection from '../components/UploadSection'
 
-function ExplorePage() {
+function UploadPage() {
   return (
     <div>
       <ScrollToTop/>
       <Chatbot/>
       <Navbar/>
-      <ExploreSection/>
+      <UploadSection/>
       <Footer/>
     </div>
   )
 }
 
-export default ExplorePage
+export default UploadPage

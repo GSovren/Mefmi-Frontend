@@ -37,6 +37,7 @@ import TanzaniaFlag from "../assets/tanzania.png";
 import UgandaFlag from "../assets/uganda.png";
 import ZambiaFlag from "../assets/zambia.png";
 import ZimbabweFlag from "../assets/zimbabwe.png";
+
 import {
   TransformWrapper,
   TransformComponent,
@@ -59,6 +60,60 @@ function DashboardSection() {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [mapSrc, setMapSrc] = useState(angolaSVG); // default to Angola or null
   const [currentCountryIndex, setCurrentCountryIndex] = useState(0); // Inside your component
+  const [selectedMetric, setSelectedMetric] = useState("public_debt");
+
+  const handleMetricChange = (e) => {
+    setSelectedMetric(e.target.value);
+  };
+
+  const metricLabels = {
+    gdp: "Total Debt",
+    gdp_growth: "External Debt",
+    inflation_rate: "Domestic Debt",
+    unemployment_rate: "Yearly Financing",
+    public_debt: "Public Debt",
+  };
+
+  const colors = [
+    "#1B5E20", // Dark Green
+    "#388E3C", // Green
+    "#66BB6A", // Medium Green
+    "#81C784", // Light Green
+    "#A5D6A7", // Soft Green
+    "#00695C", // Teal Green
+    "#009688", // Green-Blue
+    "#4CAF50", // Classic Green
+    "#81C784", // Pale Green
+    "#0288D1", // Blue
+    "#039BE5", // Sky Blue
+    "#29B6F6", // Light Blue
+    "#039BE5", // Bright Blue
+    "#00ACC1", // Cyan-Blue
+    "#1B5E20", // Deep Green
+  ];
+  const getChartData = () => {
+    const labels = sourceData.map((item) => item.name);
+    const data = sourceData.map((item) => item[selectedMetric]);
+
+    // Assign a color for each data point
+    const backgroundColors = data.map(
+      (_, index) => colors[index % colors.length]
+    );
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: selectedMetric,
+          data,
+          backgroundColor: backgroundColors,
+          borderRadius: 4,
+        },
+      ],
+    };
+  };
+
+  const chartData = getChartData();
 
   const countryFlags = {
     Angola: angolaFlag,
@@ -239,7 +294,7 @@ function DashboardSection() {
               <p>
                 FILTERS <i class="ri-filter-line"></i>
               </p>
-              <div className="dash-inputs">
+              {/* <div className="dash-inputs">
                 <label htmlFor="select-country">Country:</label>
                 <select name="" id="select-country">
                   <option value="">-- select -- country -- here --</option>
@@ -259,16 +314,21 @@ function DashboardSection() {
                   <option value="Zambia">Zambia</option>
                   <option value="Zimbabwe">Zimbabwe</option>
                 </select>
-              </div>
+              </div> */}
               <div className="dash-inputs">
-                <label htmlFor="select-metric">Metric:</label>
-                <select name="" id="select-metric">
+                <label htmlFor="select-metric">Filter according to metric data:</label>
+                <select
+                  name=""
+                  id="select-metric"
+                  value={selectedMetric}
+                  onChange={handleMetricChange}
+                >
                   <option value="">-- select -- metric -- here --</option>
-                  <option value="">External Debt</option>
-                  <option value="">Total Debt</option>
-                  <option value="">Public Debt</option>
-                  <option value="">Domestic Debt</option>
-                  <option value="">Yearly Financing</option>
+                  <option value="gdp">Total Debt</option>
+                  <option value="gdp_growth">External Debt</option>
+                  <option value="inflation_rate">Domestic Debt</option>
+                  <option value="unemployment_rate">Yearly Financing</option>
+                  <option value="public_debt">Public Debt</option>
                 </select>
               </div>
             </div>
@@ -288,6 +348,10 @@ function DashboardSection() {
             </div>
             <div className="dash-card">
               <div className="card-label">Overall Domestic Debt</div>
+              <div className="card-count">$1,1003,00</div>
+            </div>
+            <div className="dash-card">
+              <div className="card-label">Yearly Financing</div>
               <div className="card-count">$1,1003,00</div>
             </div>
           </div>
@@ -3029,81 +3093,17 @@ function DashboardSection() {
             </TransformWrapper>
           </div>
           <div className="bar-chart-container">
+            <h3>
+              {" "}
+              Bar Chart Visualisation
+              <span style={{ marginLeft: "10px", fontSize: "14px" }}>
+                (Metric: {metricLabels[selectedMetric]})
+              </span>
+            </h3>
             <Bar
-              data={{
-                labels: sourceData.map((data) => data.name),
-                datasets: [
-                  {
-                    label: "Public Debt",
-                    data: sourceData.map((data) => data.public_debt),
-                    backgroundColor: ["#00CD14"],
-                    borderRadius: 4,
-                  },
-                  {
-                    label: "GDP",
-                    data: sourceData.map((data) => data.gdp),
-                    backgroundColor: ["#1fe9f7ff"],
-                    borderRadius: 4,
-                  },
-                ],
-              }}
+              data={chartData}
               options={{
                 plugins: {
-                  title: {
-                    text: "Public Debt & Overall GDP Growth",
-                  },
-                },
-              }}
-            />
-
-            {/* <Bar
-                data={{
-                    labels: results.map(cart => `Cart ${cart.id}`),
-                    datasets: [
-                        {
-                            label: "Total Amount",
-                            data: results.map(cart => cart.total),
-                            backgroundColor: "#00CD14",
-                            borderRadius: 5,
-                        },
-                        {
-                            label: "Discounted Price",
-                            data: results.map(cart => cart.discountedTotal),
-                            backgroundColor: "#00cacdff",
-                            borderRadius: 5,
-                        },
-                    ],
-                }}
-                options={{
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: "Total Amount in Carts",
-                        },
-                    },
-                }}
-            /> */}
-          </div>
-        </div>
-        <div className="dash-container-right">
-          <div className="pie-chart-container">
-            <Doughnut
-              data={{
-                labels: sourceData.map((data) => data.name),
-                datasets: [
-                  {
-                    label: "Public Debt",
-                    data: sourceData.map((data) => data.public_debt),
-                    backgroundColor: ["#00CD14", "#82c3fcff", "#03A252"],
-                    borderRadius: 0,
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  title: {
-                    text: "Overall Public debt & GDP",
-                  },
                   legend: {
                     display: false,
                   },
@@ -3111,27 +3111,42 @@ function DashboardSection() {
               }}
             />
           </div>
-          <div className="line-chart-container">
-            <Line
-              data={{
-                labels: sourceData.map((data) => data.name),
-                datasets: [
-                  {
-                    label: "Public Debt",
-                    data: sourceData.map((data) => data.public_debt),
-                    backgroundColor: "#00CD14",
-                  },
-                  {
-                    label: "GDP",
-                    data: sourceData.map((data) => data.gdp),
-                    backgroundColor: "#0bc8cfff",
-                  },
-                ],
-              }}
+        </div>
+        <div className="dash-container-right">
+          <div className="pie-chart-container">
+            <h3>
+              {" "}
+              Pie Chart Visualisation
+              <span style={{ marginLeft: "10px", fontSize: "14px" }}>
+                (Metric: {metricLabels[selectedMetric]})
+              </span>
+            </h3>
+            <Doughnut
+              data={chartData}
               options={{
                 plugins: {
-                  title: {
-                    text: "Public & Domestic debt",
+                  legend: {
+                    display: true,
+                    position: "left",
+                  },
+                },
+              }}
+            />
+          </div>
+          <div className="line-chart-container">
+            <h3>
+              {" "}
+              Line Chart Visualisation
+              <span style={{ marginLeft: "10px", fontSize: "14px" }}>
+                (Metric: {metricLabels[selectedMetric]})
+              </span>
+            </h3>
+            <Line
+              data={chartData}
+              options={{
+                plugins: {
+                  legend: {
+                    display: false,
                   },
                 },
               }}

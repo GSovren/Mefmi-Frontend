@@ -1,20 +1,20 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
-import ExploreSection from '../components/ExploreSection'
+import RankingsSection from '../components/RankingsSection'
 import Footer from '../components/Footer'
 import ScrollToTop from '../components/ScrollToTop'
 import Chatbot from '../components/Chatbot'
 
-function ExplorePage() {
+function RankingsPage() {
   return (
     <div>
       <ScrollToTop/>
       <Chatbot/>
       <Navbar/>
-      <ExploreSection/>
+      <RankingsSection/>
       <Footer/>
     </div>
   )
 }
 
-export default ExplorePage
+export default RankingsPage

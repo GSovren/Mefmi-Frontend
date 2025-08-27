@@ -40,31 +40,37 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50%;
+  width: 65%;
   overflow: hidden; /* hide overflowing content */
 }
 
 .slide-content {
   display: inline-block;
   white-space: nowrap;
-  /* animate along the full width of duplicated content */
-  animation: slide-left 10s linear infinite;
+  overflow: hidden; /* ensure content doesn't overflow container */
 }
-
+.footer-list-header{
+  font-weight: 600;
+  color: var(--light--green);
+}
 .inner-content {
   display: inline-block;
+  animation: slide-left 20s linear infinite; /* adjust duration as needed */
 }
 .inner-content span {
-    padding-right: 10px;
+  padding-right: 10px;
+}
+.inner-content span img{
+  width: 20px;
+  height: 10px;
 }
 
 @keyframes slide-left {
-  from {
+  0% {
     transform: translateX(0);
   }
-  to {
-    /* move by the width of one set of content */
-    transform: translateX(-50%);
+  100% {
+    transform: translateX(-65%);
   }
 }
 .footer-msg-right{

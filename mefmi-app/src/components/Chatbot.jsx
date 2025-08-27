@@ -13,6 +13,7 @@ function Chatbot() {
       <div className="closed-chatbot" onClick={toggleChatbot}>
         Enquieries? <br /> Lets discuss <i class="ri-chat-ai-fill"></i>
       </div>
+      
       <div className={display ? "open-chatbot active" : "open-chatbot"}>
         <div className="chatbot-header">
           MEMFI Chatbot{" "}
