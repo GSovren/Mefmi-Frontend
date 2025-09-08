@@ -50,10 +50,10 @@ function Navbar() {
         <div className="navbar-container">
           <div className="contact-info-container">
             <div className="mefmi-address">
-              <i class="ri-map-pin-fill"></i> &nbsp;9 Earls Rd, Alexandra Park, P O Box A1419, Avondale, Harare, Zimbabwe
+              <i className="ri-map-pin-fill"></i> &nbsp;9 Earls Rd, Alexandra Park, P O Box A1419, Avondale, Harare, Zimbabwe
             </div>
             <div className="mefmi-contact">
-              <i class="ri-phone-fill"></i> &nbsp;263-242-745988/9/91-4
+              <i className="ri-phone-fill"></i> &nbsp;263-242-745988/9/91-4
             </div>
           </div>
             <div className="navbar-inner-container">
@@ -74,9 +74,9 @@ function Navbar() {
                 <NavLink to='/compare' className='nav-links' onClick={closeMobileMenu}>
                     COMPARE
                 </NavLink>
-                <li to='/upload' className='nav-links' onClick={handleUploadAndCloseMenu}>
+                <NavLink to='/upload' className='nav-links' onClick={handleUploadAndCloseMenu}>
                     UPLOAD
-                </li>
+                </NavLink>
                 <NavLink to='/sign '>
                     <button className='sign-up-btn'><i className="ri-user-fill"></i> {user?.email}</button>
                 </NavLink>

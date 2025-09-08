@@ -186,7 +186,7 @@ function Footer() {
           </div>
         </div>
         <div className="footer-msg-right">
-          Copyright 2025 MEFMI &nbsp;<i class="ri-copyright-line"></i>
+          Copyright 2025 MEFMI &nbsp;<i className="ri-copyright-line"></i>
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ function Chatbot() {
   return (
     <div>
       <div className="closed-chatbot" onClick={toggleChatbot}>
-        Enquieries? <br /> Lets discuss <i class="ri-chat-ai-fill"></i>
+        Enquieries? <br /> Lets discuss <i className="ri-chat-ai-fill"></i>
       </div>
       
       <div className={display ? "open-chatbot active" : "open-chatbot"}>
@@ -23,12 +23,12 @@ function Chatbot() {
           <div className="chatbot-body">
             <div className="chatbot-messenger-container">
               <div className="initial-msg">
-                <i class="ri-robot-fill"></i> Ask anything? How can I help you?
+                <i className="ri-robot-fill"></i> Ask anything? How can I help you?
               </div>
               <div className="messenger">
                 <input type="text" placeholder="Enter query here.." />{" "}
                 <button>
-                  <i class="ri-send-plane-fill"></i>
+                  <i className="ri-send-plane-fill"></i>
                 </button>
               </div>
             </div>

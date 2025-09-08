@@ -1,6 +1,6 @@
 import React from "react";
 import "../components/ExploreSection.css";
-import imageTBI from '../assets/to be implemented.png' 
+import imageTBI from '../assets/ToBeImplemented.png' 
 
 function ExploreSection() {
   return (
