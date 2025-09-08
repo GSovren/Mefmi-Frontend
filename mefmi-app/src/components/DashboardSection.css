@@ -89,7 +89,7 @@
     transition: .2s ease-in-out;
 }
 .explore-msg button:hover{
-    background-color: var(--light--green);
+    background-color: #1eec32;
     transition: .2s ease-in-out;
 }
 .explore-msg button i{

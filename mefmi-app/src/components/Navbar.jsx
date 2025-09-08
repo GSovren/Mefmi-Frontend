@@ -1,14 +1,48 @@
-import { useState } from 'react';
-import {Link, NavLink} from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import {Link, NavLink, useNavigate} from 'react-router-dom';
 import './Navbar.css';
 import logo from '../assets/Mefmi-logo-full.jpg'
+import { auth } from '../firebase/firebase-config';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 function Navbar() {
-    const [click, setClick] = useState(false);
-    const handleClick = () => {
-        setClick(!click);
+  const [click, setClick] = useState(false);
+  const handleClick = () => {
+      setClick(!click);
+  }
+  const closeMobileMenu = () => setClick(false);
+
+  const navigate = useNavigate();
+  const [user, setUser] = useState({});
+  onAuthStateChanged(auth, (currentUser) =>{
+    setUser(currentUser);
+  })
+  const logout = async () => {
+    await signOut(auth);
+  }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleUploadClick = () => {
+    if (user) {
+      navigate('/upload');
+    } else {
+      navigate('/login');
     }
-    const closeMobileMenu = () => setClick(false);
+  };
+
+  const handleUploadAndCloseMenu = () => {
+  handleUploadClick();
+  closeMobileMenu();
+};
+
+  
+
   return (
     <div>
       <nav className="nabar" id='navbar'>
@@ -40,12 +74,13 @@ function Navbar() {
                 <NavLink to='/compare' className='nav-links' onClick={closeMobileMenu}>
                     COMPARE
                 </NavLink>
-                <NavLink to='/upload' className='nav-links' onClick={closeMobileMenu}>
+                <li to='/upload' className='nav-links' onClick={handleUploadAndCloseMenu}>
                     UPLOAD
-                </NavLink>
+                </li>
                 <NavLink to='/sign '>
-                    <button className='sign-up-btn'><i className="ri-user-fill"></i> Sign In</button>
+                    <button className='sign-up-btn'><i className="ri-user-fill"></i> {user?.email}</button>
                 </NavLink>
+                    <button className='sign-up-btn' onClick={logout}>Sign out</button>
             </ul>
             <div className="menu-icon" onClick={handleClick}>
             <i className={click ? "ri-close-line": "ri-menu-3-line"}></i>

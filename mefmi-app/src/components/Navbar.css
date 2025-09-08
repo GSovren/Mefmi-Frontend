@@ -81,6 +81,7 @@
     align-items: center;
 }
 .nav-links{
+    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -132,7 +133,7 @@
     background-color: var(--white);
     padding: 5px 10px;
     margin-left: 20px;
-    border-radius: 50x;
+    border-radius: 5px;
     border: 1.3px solid var(--app-dark--green);
     transition: .3s;
 }
@@ -142,6 +143,7 @@
     transition: .3s;
 }
 .sign-up-btn i{
+    color: var(--app--green);
     font-size: 15px;
 }
 .menu-icon{

@@ -1,13 +1,14 @@
-
-import React from 'react'
-import '../components/ExploreSection.css'
+import React from "react";
+import "../components/ExploreSection.css";
+import imageTBI from '../assets/to be implemented.png' 
 
 function ExploreSection() {
   return (
-    <div className='explore-container'>
-      EXPLORE PAGE
+    <div className="explore-container">
+      <img src={imageTBI} alt="" />
+      TO BE IMPLEMENTED
     </div>
-  )
+  );
 }
 
-export default ExploreSection
+export default ExploreSection;

@@ -23,7 +23,7 @@ function Chatbot() {
           <div className="chatbot-body">
             <div className="chatbot-messenger-container">
               <div className="initial-msg">
-                Ask anything? How can I help you?
+                <i class="ri-robot-fill"></i> Ask anything? How can I help you?
               </div>
               <div className="messenger">
                 <input type="text" placeholder="Enter query here.." />{" "}

@@ -35,7 +35,7 @@
     justify-content: center;
     align-items: center;
     height: 80%;
-    width: 45%;
+    width: 40%;
     bottom: 40px;
     right: 10px;
     visibility: hidden;
@@ -45,7 +45,7 @@
     transform-origin: bottom right;
     background-color: var(--white);
     color: var(--white);
-    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
     transition: .3s ease-in-out;
     z-index: 9999;
 }
@@ -87,8 +87,9 @@
 .chatbot-body{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
 }
 .chatbot-messenger-container{
     display: flex;
@@ -96,17 +97,26 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    padding-bottom: 15%;
 }
 .initial-msg{
     padding-bottom: 10px;
 }
+.initial-msg i{
+    font-size: 40px;
+    opacity: 60%;
+    color: var(--light--green);
+    padding-bottom: 20px;
+}
 .messenger{
     display: flex;
-    max-width: 400px;
+    width: 70%;
 }
 .messenger input{
     width: 100%;
     padding: 10px;
+    border-radius: 10px 0px 0px 10px;
+    border: 1px solid gray;
 }
 .messenger button{
     display: flex;
