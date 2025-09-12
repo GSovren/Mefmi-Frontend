@@ -16,7 +16,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 0% 5%;
+    padding: 0% 0%;
     background-color: var(--white);
     border-bottom: 2px solid var(--app--green);
     box-shadow: 0px 8px 10px rgba(10, 253, 91, 0.5);
@@ -26,32 +26,33 @@
     display: flex;
     justify-content: end;
     align-items: center;
+    color: var(--white);
+    background-color: var(--app--green);
     font-size: 12px;
     font-weight: 500;
     width: 100%;
-    padding: 3px 0px 0px 0px;
+    padding: 3px 2%;
     gap: 20px;
 }
 .contact-info-container i{
     font-size: 14px;
-    color: var(--light--green);
+    color: var(--white);
 }
 .mefmi-address{
     font-size: 11px;
     padding: 1px 5px;
-    border: 1px solid var(--light--green);
     border-radius: 6px;
 }
 .mefmi-contact{
     font-size: 11px;
     padding: 1px 5px;
-    border: 1px solid var(--light--green);
     border-radius: 6px;
 }
 .navbar-inner-container{
     display: flex;
     justify-content: space-between;
     width: 100%;
+    padding: 0% 3%;
 }
 .nav-menu{
     display: flex;
@@ -109,7 +110,7 @@
     position: absolute;
     z-index: -1;
     font-weight: 500;
-    height: 70%;
+    height: 95%;
     background-color: var(--app--green);
     transition: .3s ease-in-out;
     bottom: 0px;
@@ -125,7 +126,21 @@
     color: var(--white);
     transition: .3s ease-in-out;
 }
+.more-btn{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 10px;
+    margin: 0px 0px 0px 10px;
+    background-color: #a0eba8;
+    border-radius: 5px;
+}
+.more-btn i{
+    font-size: 16px;
+}
 .sign-up-btn{
+    text-decoration: none;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
@@ -133,16 +148,37 @@
     background-color: var(--white);
     padding: 5px 10px;
     margin-left: 20px;
-    border-radius: 5px;
-    border: 1.3px solid var(--app-dark--green);
+    border-radius: 3px;
+    border: 2px solid var(--app--green);
     transition: .3s;
 }
 .sign-up-btn:hover{
     color: var(--light--green);
-    border: 1.3px solid var(--light--green);
+    border: 2px solid var(--light--green);
     transition: .3s;
 }
 .sign-up-btn i{
+    color: var(--app--green);
+    font-size: 15px;
+}
+.sign-out-btn{
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    background-color: var(--light--green);
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 3px;
+    border: 2px solid var(--light--green);
+    transition: .3s;
+}
+.sign-out-btn:hover{
+    background-color: var(--app--green);
+    border: 2px solid var(--light--green);
+    transition: .3s;
+}
+.sign-out-btn i{
     color: var(--app--green);
     font-size: 15px;
 }

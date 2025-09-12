@@ -1,13 +1,14 @@
 .closed-chatbot{
     cursor: pointer;
     position: fixed;
+    display: flex;
     bottom: 45px;
     right: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 60px;
-    width: 160px;
+    padding: 10px 15px;
     background-color: var(--light--green);
     color: var(--white);
     font-size: 12px;
@@ -26,7 +27,6 @@
 .closed-chatbot i{
     color: var(--white);
     font-size: 34px;
-    padding-left: 10px;
 }
 .open-chatbot{
     position: fixed;
@@ -36,7 +36,7 @@
     align-items: center;
     height: 80%;
     width: 40%;
-    bottom: 40px;
+    bottom: 45px;
     right: 10px;
     visibility: hidden;
     opacity: 0;

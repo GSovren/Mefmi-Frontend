@@ -54,18 +54,22 @@ defaults.plugins.title.color = "black";
 
 const url = "https://dummyjson.com/carts";
 
+//-----------------------------------------------------------DASHBOARD FUNCTIONS START------------------------------------------------------
 function DashboardSection() {
   const [results, setResults] = useState([]);
   const [countryMenu, setCountryMenu] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [countryFilter, setCountryFilter] = useState("");
   const [mapSrc, setMapSrc] = useState(angolaSVG); // default to Angola or null
   const [currentCountryIndex, setCurrentCountryIndex] = useState(0); // Inside your component
   const [selectedMetric, setSelectedMetric] = useState("public_debt");
+  const [countryColorMap, setCountryColorMap] = useState({});
 
+  // Handles metric change for entire dashbord page (Affecting Imteractive map and Charts)
   const handleMetricChange = (e) => {
     setSelectedMetric(e.target.value);
   };
-
+  // Metrics
   const metricLabels = {
     gdp: "Total Debt",
     gdp_growth: "External Debt",
@@ -74,46 +78,152 @@ function DashboardSection() {
     public_debt: "Public Debt",
   };
 
-  const colors = [
-    "#1B5E20", // Dark Green
-    "#388E3C", // Green
-    "#66BB6A", // Medium Green
-    "#81C784", // Light Green
-    "#A5D6A7", // Soft Green
-    "#00695C", // Teal Green
-    "#009688", // Green-Blue
-    "#4CAF50", // Classic Green
-    "#81C784", // Pale Green
-    "#0288D1", // Blue
-    "#039BE5", // Sky Blue
-    "#29B6F6", // Light Blue
-    "#039BE5", // Bright Blue
-    "#00ACC1", // Cyan-Blue
-    "#1B5E20", // Deep Green
+  // ------------------------------------------------FUNCTION TO INTERPOLATE COLORS-------------------------------------------------------------
+  // Define your color stops for the gradient
+  // const colorStops = [
+  //   { stop: 0, color: "#ff0000" }, // red for lowest
+  //   { stop: 1, color: "#00ff00" }, // green for highest
+  // ];
+  const colorStops = [
+    { stop: 0, color: "#cc0000" }, // vibrant, darkened red
+    { stop: 1, color: "#00ed00" }, // vibrant, darkened green
   ];
+
+  // Function to interpolate between two colors
+  function interpolateColor(color1, color2, factor) {
+    const c1 = parseInt(color1.slice(1), 16);
+    const c2 = parseInt(color2.slice(1), 16);
+    const r1 = (c1 >> 16) & 0xff;
+    const g1 = (c1 >> 8) & 0xff;
+    const b1 = c1 & 0xff;
+    const r2 = (c2 >> 16) & 0xff;
+    const g2 = (c2 >> 8) & 0xff;
+    const b2 = c2 & 0xff;
+
+    const r = Math.round(r1 + (r2 - r1) * factor);
+    const g = Math.round(g1 + (g2 - g1) * factor);
+    const b = Math.round(b1 + (b2 - b1) * factor);
+
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  }
+
+  // Function to get color based on value
+  function getColorForValue(value, min, max, invert = false) {
+    const ratio = (value - min) / (max - min);
+    // If invert is true, invert the ratio
+    const adjustedRatio = invert ? 1 - ratio : ratio;
+    return interpolateColor(
+      colorStops[0].color,
+      colorStops[1].color,
+      adjustedRatio
+    );
+  }
+
+  //-------------------------------------------------------------FUNCTION TO GET CHART DATA------------------------------------------------------------------------
   const getChartData = () => {
     const labels = sourceData.map((item) => item.name);
-    const data = sourceData.map((item) => item[selectedMetric]);
+    const dataValues = sourceData.map((item) => item[selectedMetric]);
 
-    // Assign a color for each data point
-    const backgroundColors = data.map(
-      (_, index) => colors[index % colors.length]
-    );
+    const minVal = Math.min(...dataValues);
+    const maxVal = Math.max(...dataValues);
+    const invertColors = selectedMetric === "inflation_rate";
+
+    const backgroundColors = dataValues.map((value, index) => {
+      const countryName = sourceData[index].name;
+      if (countryFilter && countryName === countryFilter) {
+        // Highlight the selected country
+        return getColorForValue(value, minVal, maxVal, invertColors);
+      } else if (countryFilter && countryName !== countryFilter) {
+        // Dim other countries
+        return "#8495a2ff";
+      } else {
+        // No filter applied, show normal colors
+        return getColorForValue(value, minVal, maxVal, invertColors);
+      }
+    });
 
     return {
       labels,
       datasets: [
         {
-          label: selectedMetric,
-          data,
+          label: metricLabels[selectedMetric],
+          data: dataValues,
           backgroundColor: backgroundColors,
-          borderRadius: 4,
+          borderRadius: 2,
+          borderWidth: 1,
+          borderColor: "darkGreen",
+          pointRadius: 4,
+          responsive: true,
+          maintainAspectRatio: true,
         },
+        
       ],
     };
   };
 
   const chartData = getChartData();
+
+  //-------------------------------------------------------------FUNCTION FOR COLOR MAPPING COUNTRIES ON SVG MAP------------------------------------------------------------------------
+
+  const countryColors = {
+    Angola: "#ff0000",
+    Botswana: "#00ff00",
+    Burundi: "#0000ff",
+    Eswatini: "#ffff00",
+    Kenya: "#ff00ff",
+    Lesotho: "#00ffff",
+    Malawi: "#ffa500",
+    Mozambique: "#800080",
+    Namibia: "#008000",
+    Rwanda: "#000080",
+    Tanzania: "#800000",
+    Uganda: "#808000",
+    Zambia: "#008080",
+    SouthSudan: "#c0c0c0",
+    Zimbabwe: "#a52a2a",
+  };
+
+  // 2. Update fill colors whenever metric changes
+  useEffect(() => {
+    // Generate color mapping based on current metric
+    const dataValues = sourceData.map((item) => item[selectedMetric]);
+    const minVal = Math.min(...dataValues);
+    const maxVal = Math.max(...dataValues);
+    const invertColors = selectedMetric === "inflation_rate";
+
+    const metricColorMap = {};
+    sourceData.forEach((item) => {
+      const countryName = item.name; // ensure matches class names
+      const value = item[selectedMetric];
+      const color = getColorForValue(value, minVal, maxVal, invertColors);
+      metricColorMap[countryName] = color;
+    });
+    setCountryColorMap(metricColorMap);
+
+    // Now apply colors to the SVG map
+    Object.keys(countryColors).forEach((country) => {
+      let fillColor;
+
+      if (countryFilter) {
+        // When a country is selected, highlight only that country
+        if (country === countryFilter) {
+          fillColor = metricColorMap[country] || countryColors[country];
+        } else {
+          fillColor = "#8495a2ff"; // dim others
+        }
+      } else {
+        // No country filter, always use metric-based colors
+        fillColor = metricColorMap[country] || countryColors[country];
+      }
+
+      // Apply the color to SVG elements
+      document.querySelectorAll(`.${country}`).forEach((elem) => {
+        elem.setAttribute("fill", fillColor);
+      });
+    });
+  }, [selectedMetric, countryFilter]);
+
+  //-------------------------------------ARRAYS FOR (COUNTRY MAPS) AND (COUNTRY FLAGS) / COUNTRY MENU FUNCTIONS ----------------------------------------------------
 
   const countryFlags = {
     Angola: angolaFlag,
@@ -131,7 +241,6 @@ function DashboardSection() {
     Uganda: UgandaFlag,
     Zambia: ZambiaFlag,
     Zimbabwe: ZimbabweFlag,
-    // add other countries as needed
   };
 
   // Convert the countryMaps object into an array with index
@@ -151,9 +260,9 @@ function DashboardSection() {
     Uganda: UgandaSVG,
     Zambia: ZambiaSVG,
     Zimbabwe: ZimbabweSVG,
-    // add other countries here if needed
   }).map(([name, svg], index) => ({ index, name, svg }));
   const controller = new AbortController();
+
   // Function to update the map based on current index
   const updateMapByIndex = (index) => {
     const country = countryMapsArray[index];
@@ -163,7 +272,7 @@ function DashboardSection() {
     }
   };
 
-  // Handler for previous button
+  // Handler for previous button (cycling through array)
   const handlePrev = () => {
     setCurrentCountryIndex((prevIndex) => {
       const newIndex =
@@ -173,7 +282,7 @@ function DashboardSection() {
     });
   };
 
-  // Handler for next button
+  // Handler for next button (cycling through array)
   const handleNext = () => {
     setCurrentCountryIndex((prevIndex) => {
       const newIndex =
@@ -188,10 +297,12 @@ function DashboardSection() {
     return country ? country.svg : angolaSVG; // fallback if not found
   };
 
+  // Toggle Country menu display
   const toggleCountryMenu = () => {
     setCountryMenu((prev) => !prev);
   };
 
+  // Handle country click on SVG Map
   const handleCountryClick = (countryName) => {
     setSelectedCountry(countryName);
     const mapSrc = getMapByName(countryName);
@@ -218,6 +329,7 @@ function DashboardSection() {
     };
   }, []);
 
+  //-------------------------------------------------------------RETURN PRAMATERS FOR ACTUAL DASHBOARD PAGE-----------------------------------------------------------------------
   return (
     <div className="dashboard-container">
       <div
@@ -253,14 +365,14 @@ function DashboardSection() {
                 fugiat. Quis maiores tenetur voluptas cum?
               </p>
               <button>
-                Explore More <i class="ri-arrow-right-line"></i>
+                Explore More <i className="ri-arrow-right-line"></i>
               </button>
               <div className="country-slider-icons">
                 <div className="slider-icon-prev" onClick={handlePrev}>
-                  <i class="ri-arrow-left-circle-fill"></i> Previous
+                  <i className="ri-arrow-left-circle-fill"></i> Previous
                 </div>
                 <div className="slider-icon-next" onClick={handleNext}>
-                  Next Country<i class="ri-arrow-right-circle-fill"></i>
+                  Next Country<i className="ri-arrow-right-circle-fill"></i>
                 </div>
               </div>
             </div>
@@ -277,7 +389,7 @@ function DashboardSection() {
           <div className="hero-btns">
             <a href="https://mefmi.org/" target="_blank">
               <button>
-                MEFMI Website <i class="ri-earth-fill"></i>
+                MEFMI Website <i className="ri-earth-fill"></i>
               </button>
             </a>
 
@@ -292,31 +404,12 @@ function DashboardSection() {
           <div className="dash-filters-container">
             <div className="dash-filters">
               <p>
-                FILTERS <i class="ri-filter-line"></i>
+                FILTERS <i className="ri-filter-line"></i>
               </p>
-              {/* <div className="dash-inputs">
-                <label htmlFor="select-country">Country:</label>
-                <select name="" id="select-country">
-                  <option value="">-- select -- country -- here --</option>
-                  <option value="Angola">Angola</option>
-                  <option value="Botswana">Botswana</option>
-                  <option value="Brurundi">Burundi</option>
-                  <option value="Eswatini">Eswatini</option>
-                  <option value="Kenya">Kenya</option>
-                  <option value="Lesotho">Lesotho</option>
-                  <option value="Malawi">Malawi</option>
-                  <option value="Mozambique">Mozambique</option>
-                  <option value="Namibia">Namibia</option>
-                  <option value="Rwanda">Rwanda</option>
-                  <option value="South Sudan">South Sudan</option>
-                  <option value="Tanzania">Tanzania</option>
-                  <option value="Uganda">Uganda</option>
-                  <option value="Zambia">Zambia</option>
-                  <option value="Zimbabwe">Zimbabwe</option>
-                </select>
-              </div> */}
               <div className="dash-inputs">
-                <label htmlFor="select-metric">Filter according to metric data:</label>
+                <label htmlFor="select-metric">
+                  Filter according to metric data:
+                </label>
                 <select
                   name=""
                   id="select-metric"
@@ -330,6 +423,40 @@ function DashboardSection() {
                   <option value="unemployment_rate">Yearly Financing</option>
                   <option value="public_debt">Public Debt</option>
                 </select>
+              </div>
+              <div className="dash-inputs">
+                <label htmlFor="select-country">Country:</label>
+                <select
+                  name=""
+                  id="select-country"
+                  value={countryFilter}
+                  onChange={(e) => setCountryFilter(e.target.value)}
+                >
+                  <option value="">-- select -- country -- here --</option>
+                  <option value="Angola">Angola</option>
+                  <option value="Botswana">Botswana</option>
+                  <option value="Brurundi">Burundi</option>
+                  <option value="Eswatini">Eswatini</option>
+                  <option value="Kenya">Kenya</option>
+                  <option value="Lesotho">Lesotho</option>
+                  <option value="Malawi">Malawi</option>
+                  <option value="Mozambique">Mozambique</option>
+                  <option value="Namibia">Namibia</option>
+                  <option value="Rwanda">Rwanda</option>
+                  <option value="South6Sudan">South Sudan</option>
+                  <option value="Tanzania">Tanzania</option>
+                  <option value="Uganda">Uganda</option>
+                  <option value="Zambia">Zambia</option>
+                  <option value="Zimbabwe">Zimbabwe</option>
+                </select>
+              </div>
+              <div className="color-codes-container">
+                <div className="color-key-header">Color Key:</div>
+                <div className="color-bar"></div>
+                <div className="color-key-labels">
+                  <div>Highest</div>
+                  <div>Lowest</div>
+                </div>
               </div>
             </div>
           </div>
@@ -529,13 +656,13 @@ function DashboardSection() {
                             d="M1006.7 427l-0.2 2.1 1.3 3.8-1.1 2.6 0.6 1.7-2.8 4-1.7 2-1.1 4 0.2 4.1-0.3 10.3-4.7 0.8-1.4-4.4 0.3-14.8-1.2-1.3-0.2-3.2-2-2.2-1.7-1.9 0.7-3.4 2-0.7 1.1-2.8 2.8-0.6 1.2-1.9 1.9-1.9 2 0 4.3 3.7z"
                             id="BJ"
                             name="Benin"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M988.5 406l-0.5 3.1 0.8 2.9 3.1 4.2 0.2 3.1 6.5 1.5-0.1 4.4-1.2 1.9-2.8 0.6-1.1 2.8-2 0.7-4.9-0.1-2.6-0.5-1.8 1-2.5-0.5-9.8 0.3-0.2 3.7 0.8 4.8-3.9-1.6-2.6 0.2-2 1.6-2.5-1.3-1-2.2-2.5-1.4-0.4-3.7 1.6-2.7-0.2-2.2 4.5-5.3 0.9-4.4 1.5-1.6 2.7 0.9 2.4-1.3 0.8-1.7 4.3-2.8 1.1-2 5.3-2.7 3.1-0.9 1.4 1.2 3.6 0z"
                             id="BF"
                             name="Burkina Faso"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1500.6 360.3l0.6 4.6-2.1-1 1.1 5.2-2.1-3.3-0.8-3.3-1.5-3.1-2.8-3.7-5.2-0.3 0.9 2.7-1.2 3.5-2.6-1.3-0.6 1.2-1.7-0.7-2.2-0.6-1.6-5.3-2.6-4.8 0.3-3.9-3.7-1.7 0.9-2.3 3-2.4-4.6-3.4 1.2-4.4 4.9 2.8 2.7 0.3 1.2 4.5 5.4 0.9 5.1-0.1 3.4 1.1-1.6 5.4-2.4 0.4-1.2 3.6 3.6 3.4 0.3-4.2 1.5 0 4.4 10.2z"
@@ -629,7 +756,7 @@ function DashboardSection() {
                             d="M1121.3 446.5l3.9 2.5 3.1 2.6 0.1 2.1 3.9 3.3 2.4 2.8 1.4 3.8 4.3 2.6 0.9 2-1.8 0.7-3.7-0.1-4.2-0.7-2.1 0.5-0.9 1.6-1.8 0.2-2.2-1.4-6.3 3.2-2.6-0.6-0.8 0.5-1.6 3.9-4.3-1.3-4.1-0.6-3.6-2.4-4.7-2.2-3 2.1-2.2 3.2-0.5 4.5-3.6-0.3-3.9-1.1-3.3 3.4-3 6-0.6-1.9-0.3-2.9-2.6-2.1-2.1-3.3-0.5-2.3-2.7-3.4 0.5-1.9-0.6-2.7 0.4-5 1.4-1.1 2.8-6.5 4.6-0.5 1-1.7 1 0.2 1.4 1.4 7.1-2.4 2.4-2.5 2.9-2.3-0.6-2.2 1.6-0.6 5.5 0.4 5.2-3 4-7 2.8-2.6 3.6-1.1 0.7 2.7 3.3 4 0 2.7-0.8 2.6 0.4 2 1.9 1.9 0.5 0.3z"
                             id="CF"
                             name="Central African Republic"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Canada"
@@ -768,25 +895,25 @@ function DashboardSection() {
                             d="M955.9 435.2l2.5 1.4 1 2.2 2.5 1.3 2-1.6 2.6-0.2 3.9 1.6 1.5 9.2-2.4 5.3-1.5 7.3 2.4 5.5-0.2 2.6-2.6 0-3.9-1.2-3.7 0-6.7 1.2-3.9 1.8-5.6 2.4-1.1-0.2 0.4-5.3 0.6-0.8-0.2-2.5-2.4-2.7-1.8-0.4-1.6-1.8 1.2-2.9-0.5-3.1 0.2-1.8 0.9 0 0.4-2.8-0.4-1.3 0.5-0.9 2.1-0.7-1.4-5.2-1.3-2.6 0.5-2.2 1.1-0.5 0.8-0.6 1.5 1 4.4 0 1-1.8 1 0.1 1.6-0.7 0.9 2.7 1.3-0.8 2.4-1z"
                             id="CI"
                             name="Côte d'Ivoire"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1072.8 454.2l-2.8 6.5-1.4 1.1-0.4 5 0.6 2.7-0.5 1.9 2.7 3.4 0.5 2.3 2.1 3.3 2.6 2.1 0.3 2.9 0.6 1.9-0.4 3.4-4.5-1.5-4.6-1.7-7.1-0.2-0.7-0.4-3.4 0.8-3.4-0.8-2.7 0.4-9.3-0.1 0.9-5.1-2.3-4.3-2.6-1-1.1-2.9-1.5-0.9 0.1-1.8 1.4-4.6 2.7-6.2 1.6 0 3.4-3.8 2.1-0.1 3.2 2.7 3.9-2.2 0.5-2.7 1.3-2.6 0.8-3.2 3-2.6 1.1-4.5 1.2-1.5 0.8-3.3 1.4-4.1 4.7-5 0.3-2.1 0.6-1.2-2.3-2.5 0.2-2.1 1.5-0.3 2.3 4.1 0.5 4.2-0.2 4.3 3.2 5.8-3.2 0-1.6 0.4-2.6-0.6-1.2 3 3.4 3.8 2.5 1.1 0.8 2.6 1.8 4.4-0.8 1.8z"
                             id="CM"
                             name="Cameroon"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1141.3 468.2l3.5 5.3 2.6 0.8 1.5-1.1 2.6 0.4 3.1-1.3 1.4 2.7 5.1 4.3-0.3 7.5 2.3 0.9-1.9 2.2-2.1 1.8-2.2 3.3-1.2 3-0.3 5.1-1.3 2.5-0.1 4.8-1.6 1.8-0.2 3.8-0.8 0.5-0.6 3.6 1.4 2.9 0.1 1-1.2 10.3 1.5 3.6-1 2.7 1.8 4.6 3.4 3.5 0.7 3.5 1.6 1.7-0.3 1.1-0.9-0.3-7.7 1.1-1.5 0.8-1.7 4.1 1.2 2.8-1.1 7.6-0.9 6.4 1.5 1.2 3.9 2.5 1.6-1.2 0.2 6.9-4.3 0-2.2-3.5-2-2.8-4.3-0.9-1.2-3.3-3.5 2-4.4-0.9-1.9-2.9-3.5-0.6-2.7 0.1-0.3-2-1.9-0.1-2.6-0.4-3.5 1-2.4-0.2-1.4 0.6 0.4-7.6-1.8-2.4-0.4-4 0.9-3.9-1.1-2.4-0.1-4.1-6.8 0.1 0.5-2.3-2.9 0-0.3 1.1-3.5 0.3-1.5 3.7-0.9 1.6-3.1-0.9-1.8 0.9-3.8 0.5-2.1-3.3-1.3-2.1-1.6-3.9-1.3-4.7-16.7-0.1-2 0.7-1.7-0.1-2.3 0.9-0.8-2 1.4-0.7 0.2-2.8 1-1.6 2-1.4 1.5 0.7 2-2.5 3.1 0.1 0.3 1.8 2.1 1.1 3.4-4 3.3-3.1 1.4-2.1-0.1-5.3 2.5-6.2 2.6-3.3 3.7-3.1 0.7-2 0.1-2.4 0.9-2.2-0.3-3.7 0.7-5.7 1.1-4 1.7-3.4 0.3-3.9 0.5-4.5 2.2-3.2 3-2.1 4.7 2.2 3.6 2.4 4.1 0.6 4.3 1.3 1.6-3.9 0.8-0.5 2.6 0.6 6.3-3.2 2.2 1.4 1.8-0.2 0.9-1.6 2.1-0.5 4.2 0.7 3.7 0.1 1.8-0.7z"
                             id="CD"
                             name="Democratic Republic of the Congo"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1090.9 479.3l-0.3 3.9-1.7 3.4-1.1 4-0.7 5.7 0.3 3.7-0.9 2.2-0.1 2.4-0.7 2-3.7 3.1-2.6 3.3-2.5 6.2 0.1 5.3-1.4 2.1-3.3 3.1-3.4 4-2.1-1.1-0.3-1.8-3.1-0.1-2 2.5-1.5-0.7-2.1-2.2-1.7 1.1-2.3 2.8-4.6-6.8 4.3-3.6-2.1-4.2 2-1.6 3.8-0.8 0.4-2.9 3.1 3.1 5 0.3 1.7-3 0.7-4.3-0.6-5-2.7-3.8 2.5-7.5-1.4-1.2-4.2 0.5-1.6-3.3 0.4-2.8 7.1 0.2 4.6 1.7 4.5 1.5 0.4-3.4 3-6 3.3-3.4 3.9 1.1 3.6 0.3z"
                             id="CG"
                             name="Republic of Congo"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M584.4 426.2l-3.7 1.1-1.6 3.2-2.3 1.8-1.8 2.4-0.9 4.6-1.8 3.8 2.9 0.4 0.6 2.9 1.2 1.5 0.3 2.5-0.7 2.4 0.1 1.4 1.4 0.5 1.2 2.2 7.3-0.6 3.3 0.8 3.8 5.6 2.3-0.7 4.1 0.3 3.2-0.7 2 1.1-1.2 3.4-1.3 2.2-0.6 4.6 1.1 4.3 1.5 1.9 0.2 1.4-2.9 3.2 2 1.4 1.5 2.3 1.6 6.4-1.1 0.8-1-3.8-1.6-2.1-1.9 2.3-11-0.2 0 4 3.3 0.7-0.2 2.5-1.1-0.7-3.2 1-0.1 4.7 2.6 2.4 0.9 3.6-0.1 2.8-2.2 17.6-2.9-3.4-1.7-0.1 3.5-6.6-4.4-3-3.4 0.6-2.1-1.1-3.1 1.7-4.2-0.9-3.5-6.7-2.6-1.6-1.8-3.1-3.8-3-1.5 0.6-2.4-1.5-2.8-2.1-1.6 1-4.8-0.9-1.4-2.8-1.1 0.1-5.6-3.6-0.7-2 2.1-0.5-0.2-3.2 1.4-2.4 2.8-0.4 2.5-4 2.2-3.4-2-1.5 1.2-3.7-1.1-5.9 1.3-1.7-0.7-5.4-2.2-3.5 0.9-3.1 1.8 0.5 1.1-1.9-1.1-3.8 0.7-0.9 2.9 0.2 4.5-4.5 2.4-0.7 0.1-2.1 1.4-5.5 3.4-2.9 3.5-0.2 0.6-1.3 4.4 0.5 4.6-3.2 2.3-1.4 2.9-3.1 2 0.4 1.3 1.7-1.2 2.1z"
@@ -817,7 +944,7 @@ function DashboardSection() {
                             d="M1229.5 428.2l-1.9 3.5-1.3-1.2-1.3 0.5-3.2-0.1-0.2-2-0.5-1.8 1.8-3 1.9-2.8 2.4 0.6 1.7-1.6 1.4 2-0.1 2.6-3.1 1.6 2.4 1.7z"
                             id="DJ"
                             name="Djibouti"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Denmark"
@@ -836,7 +963,7 @@ function DashboardSection() {
                             d="M1031 264.6l-1 3.3 1 6.1-1.1 5.3-3.2 3.6 0.6 4.8 4.5 3.9 0.1 1.5 3.4 2.6 2.6 11.5 1.9 5.7 0.4 3-0.8 5.2 0.4 3-0.6 3.5 0.6 4-2.2 2.7 3.4 4.7 0.2 2.7 2.1 3.6 2.5-1.2 4.5 3 2.5 4-18.8 12.3-16 12.6-7.8 2.8-6.2 0.7-0.1-4.1-2.6-1.1-3.5-1.8-1.3-3-18.7-14-18.6-14-20.5-15.6 0.1-1.2 0.1-0.4 0.1-7.6 8.9-4.8 5.4-1 4.5-1.7 2.1-3.2 6.4-2.5 0.3-4.8 3.1-0.6 2.5-2.3 7.1-1.1 1-2.5-1.4-1.4-1.9-6.8-0.3-3.9-1.9-4.1 5.1-3.5 5.8-1.1 3.3-2.6 5.1-2 9-1.1 8.8-0.5 2.7 0.9 4.9-2.5 5.7-0.1 2.2 1.5 3.6-0.4z"
                             id="DZ"
                             name="Algeria"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M559 502.8l0.8 4.9-1.7 4.1-6.1 6.8-6.7 2.5-3.4 5.6-0.9 4.3-3.1 2.7-2.5-3.3-2.3-0.7-2.3 0.5-0.3-2.3 1.6-1.5-0.7-2.7 2.9-4.8-1.3-2.8-2.1 3-3.5-2.9 1.1-1.8-1-5.8 2-1 1-4 2.1-4.1-0.3-2.6 3.1-1.4 3.9-2.5 5.6 3.6 1.1-0.1 1.4 2.8 4.8 0.9 1.6-1 2.8 2.1 2.4 1.5z"
@@ -847,13 +974,13 @@ function DashboardSection() {
                             d="M1172.1 301.4l3.9 9.4 0.7 1.6-1.3 2.6-0.7 4.8-1.2 3.4-1.2 1.1-2-2.1-2.7-2.8-4.7-9.2-0.5 0.6 2.8 6.7 3.9 6.5 4.9 10 2.3 3.5 2 3.6 5.4 7.1-1 1.1 0.4 4.2 6.8 5.8 1.1 1.3-22.1 0-21.5 0-22.3 0-1-23.7-1.3-22.8-2-5.2 1.1-3.9-1-2.8 1.7-3.1 7.2-0.1 5.4 1.7 5.5 1.9 2.6 1 4-2 2.1-1.8 4.7-0.6 3.9 0.8 1.8 3.2 1.1-2.1 4.4 1.5 4.3 0.4 2.5-1.6z"
                             id="EG"
                             name="Egypt"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1228.9 420.3l-1.7 1.6-2.4-0.6-2-2.1-2.5-3.7-2.6-2.1-1.5-2.2-5-2.6-3.9-0.1-1.4-1.3-3.2 1.5-3.6-2.9-1.5 4.8-6.6-1.4-0.7-2.5 2-9.5 0.3-4.2 1.7-2 4-1.1 2.7-3.6 3.6 7.4 1.9 5.9 3.2 3.1 8 6.1 3.3 3.6 3.2 3.8 1.8 2.2 2.9 1.9z"
                             id="ER"
                             name="Eritrea"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1113.7 124.6l0.9 1-2.6 3.4 2.4 5.6-1.6 1.9-3.8-0.1-4.4-2.2-2.1-0.7-3.8 1-0.1-3.5-1.5 0.8-3.3-2.1-1-3.4 5.5-1.7 5.6-0.8 5.1 0.9 4.7-0.1z"
@@ -864,7 +991,7 @@ function DashboardSection() {
                             d="M1207.3 408.5l3.9 0.1 5 2.6 1.5 2.2 2.6 2.1 2.5 3.7 2 2.1-1.9 2.8-1.8 3 0.5 1.8 0.2 2 3.2 0.1 1.3-0.5 1.3 1.2-1.2 2.2 2.2 3.6 2.2 3.1 2.2 2.3 18.7 7.6 4.8-0.1-15.6 19.3-7.3 0.3-5 4.5-3.6 0.1-1.5 2.1-3.9 0-2.3-2.2-5.2 2.7-1.6 2.7-3.8-0.6-1.3-0.7-1.3 0.2-1.8-0.1-7.2-5.4-4 0-1.9-2.1-0.1-3.6-2.9-1.1-3.5-7-2.6-1.5-1-2.6-3-3.1-3.5-0.5 1.9-3.6 3-0.2 0.8-1.9-0.2-5 0-0.8 1.5-6.7 2.6-1.8 0.5-2.6 2.3-5 3.3-3.1 2-6.4 0.7-5.5 6.6 1.4 1.5-4.8 3.6 2.9 3.2-1.5 1.4 1.3z"
                             id="ET"
                             name="Ethiopia"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1104.1 70.1l0.4 3.8 7.3 3.7-2.9 4.2 6.5 6.3-1.7 4.8 4.9 4.2-0.9 3.8 7.4 3.9-0.9 2.9-3.4 3.4-8 7.4-8 0.5-7.6 2.1-7.1 1.3-3.2-3.2-4.7-1.9 0.1-5.8-3-5.2 1.6-3.4 3.3-3.5 8.8-6.2 2.6-1.2-0.9-2.4-6.5-2.6-1.8-2.2-1.8-8.5-7.2-3.7-6-2.7 2.2-1.4 5.1 2.8 5.3-0.2 4.7 1.3 3.4-2.4 1.1-4 5.9-1.8 5.8 2.1-0.8 3.8z"
@@ -875,7 +1002,7 @@ function DashboardSection() {
                             d="M1060.5 487.3l-0.4 2.8 1.6 3.3 4.2-0.5 1.4 1.2-2.5 7.5 2.7 3.8 0.6 5-0.7 4.3-1.7 3-5-0.3-3.1-3.1-0.4 2.9-3.8 0.8-2 1.6 2.1 4.2-4.3 3.6-5.8-6.5-3.7-5.3-3.5-6.6 0.2-2.2 1.3-2 1.3-4.7 1.2-4.8 1.9-0.3 8.2 0 0-7.7 2.7-0.4 3.4 0.8 3.4-0.8 0.7 0.4z"
                             id="GA"
                             name="Gabon"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="United Kingdom"
@@ -894,31 +1021,31 @@ function DashboardSection() {
                             d="M986.5 431.1l-0.4 2 2.3 3.3 0 4.7 0.6 5 1.4 2.4-1.3 5.7 0.5 3.2 1.5 4.1 1.3 2.3-8.9 3.7-3.2 2.2-5.1 1.9-5-1.8 0.2-2.6-2.4-5.5 1.5-7.3 2.4-5.3-1.5-9.2-0.8-4.8 0.2-3.7 9.8-0.3 2.5 0.5 1.8-1 2.6 0.5z"
                             id="GH"
                             name="Ghana"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M921.5 421.9l0.3 2.4 0.9 0 1.5-0.9 0.9 0.2 1.6 1.7 2.4 0.5 1.5-1.4 1.9-0.9 1.3-0.9 1.1 0.2 1.3 1.4 0.6 1.8 2.3 2.7-1.1 1.6-0.3 2.1 1.2-0.6 0.7 0.7-0.3 1.9 1.7 1.9-1.1 0.5-0.5 2.2 1.3 2.6 1.4 5.2-2.1 0.7-0.5 0.9 0.4 1.3-0.4 2.8-0.9 0-1.6-0.2-1.1 2.6-1.6 0-1.1-1.4 0.4-2.6-2.4-3.9-1.4 0.7-1.3 0.2-1.5 0.3 0.1-2.3-0.9-1.7 0.2-1.9-1.2-2.7-1.6-2.3-4.5 0-1.3 1.2-1.6 0.2-1 1.4-0.6 1.7-3.1 2.9-2.4-3.8-2.2-2.5-1.4-0.9-1.4-1.3-0.6-2.8-0.8-1.4-1.7-1.1 2.6-3.1 1.7 0.1 1.5-1 1.2-0.1 0.9-0.8-0.4-2.1 0.6-0.7 0.1-2.2 2.7 0.1 4.1 1.5 1.2-0.1 0.4-0.7 3.1 0.5 0.8-0.4z"
                             id="GN"
                             name="Guinea"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M891.6 417.4l0.8-2.9 6.1-0.1 1.3-1.6 1.8-0.1 2.2 1.6 1.7 0 1.9-1 1.1 1.8-2.5 1.5-2.4-0.2-2.4-1.3-2.1 1.5-1 0-1.4 0.9-5.1-0.1z"
                             id="GM"
                             name="The Gambia"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M909.2 421l-0.1 2.2-0.6 0.7 0.4 2.1-0.9 0.8-1.2 0.1-1.5 1-1.7-0.1-2.6 3.1-2.9-2.6-2.4-0.5-1.3-1.8 0.1-1-1.7-1.3-0.4-1.4 3-1 1.9 0.2 1.5-0.8 10.4 0.3z"
                             id="GW"
                             name="Guinea-Bissau"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1050.3 487.3l0 7.7-8.2 0-1.9 0.3-1.1-0.9 1.9-7.2 9.3 0.1z"
                             id="GQ"
                             name="Equatorial Guinea"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Greece"
@@ -1161,13 +1288,13 @@ function DashboardSection() {
                             d="M938.6 452.5l-0.2 1.8 0.5 3.1-1.2 2.9 1.6 1.8 1.8 0.4 2.4 2.7 0.2 2.5-0.6 0.8-0.4 5.3-1.5 0.1-5.8-3.1-5.2-4.9-4.8-3.5-3.8-4.1 1.4-2.1 0.3-1.9 2.6-3.4 2.6-3 1.3-0.2 1.4-0.7 2.4 3.9-0.4 2.6 1.1 1.4 1.6 0 1.1-2.6 1.6 0.2z"
                             id="LR"
                             name="Liberia"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1122.6 299.1l-1.7 3.1 1 2.8-1.1 3.9 2 5.2 1.3 22.8 1 23.7 0.5 12.8-6.4 0 0 2.7-22.6-12.3-22.5-12.3-5.5 3.5-3.8 2.4-3.2-3.5-8.8-2.8-2.5-4-4.5-3-2.5 1.2-2.1-3.6-0.2-2.7-3.4-4.7 2.2-2.7-0.6-4 0.6-3.5-0.4-3 0.8-5.2-0.4-3-1.9-5.7 2.6-1.4 0.4-2.8-0.6-2.6 3.6-2.5 1.6-2.1 2.6-1.8 0.1-4.9 6.4 2.2 2.3-0.6 4.5 1.1 7.3 2.9 2.8 5.7 4.9 1.2 7.8 2.7 6 3.2 2.5-1.7 2.5-2.9-1.6-4.9 1.5-3.2 3.7-3 3.7-0.8 7.4 1.3 2 2.8 2 0.1 1.8 1.1 5.4 0.7 1.5 2.1z"
                             id="LY"
                             name="Libya"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1445.9 462l-4.8 1.5-2.9-5.1-1.4-9.2 2-10.4 4.1 3.5 2.8 4.5 3.1 6.7-0.6 6.7-2.3 1.8z"
@@ -1236,7 +1363,7 @@ function DashboardSection() {
                             d="M974.8 276l1.9 4.1 0.3 3.9 1.9 6.8 1.4 1.4-1 2.5-7.1 1.1-2.5 2.3-3.1 0.6-0.3 4.8-6.4 2.5-2.1 3.2-4.5 1.7-5.4 1-8.9 4.8-0.1 7.6-0.9 0 0.1 3.4-3.4 0.2-1.8 1.5-2.5 0-2-0.9-4.6 0.7-1.9 5-1.8 0.5-2.7 8.1-7.9 6.9-2 8.9-2.4 2.9-0.7 2.3-12.5 0.5-0.1 0 0.3-3 2.2-1.7 1.9-3.4-0.3-2.2 2-4.5 3.2-4.1 1.9-1 1.6-3.7 0.2-3.5 2.1-3.9 3.8-2.4 3.6-6.5 0.1-0.1 2.9-2.5 5.1-0.7 4.4-4.4 2.8-1.7 4.7-5.4-1.2-7.9 2.2-5.6 0.9-3.4 3.6-4.3 5.4-2.9 4.1-2.7 3.7-6.6 1.8-4 3.9 0.1 3.1 2.7 5.1-0.4 5.5 1.4 2.4 0z"
                             id="MA"
                             name="Morocco"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1129.4 210.3l-1.3-2.9 0.2-2.7-0.6-2.7-3.4-3.8-2-2.6-1.8-1.8-1.6-0.7 1.1-0.9 3.2-0.6 4 1.9 2 0.3 2.6 1.7-0.1 2.1 2 1 1.1 2.6 2 1.6-0.2 1 1 0.6-1.3 0.5-3-0.2-0.6-0.9-1 0.5 0.6 1.1-1.1 2.1-0.6 2.1-1.2 0.7z"
@@ -1247,7 +1374,7 @@ function DashboardSection() {
                             d="M1267.9 588.9l0.4 7.7 1.3 3-0.7 3.1-1.2 1.8-1.6-3.7-1.2 1.9 0.8 4.7-0.7 2.8-1.7 1.4-0.7 5.5-2.7 7.5-3.4 8.8-4.3 12.2-2.9 8.9-3.1 7.5-4.6 1.5-5.1 2.7-3-1.6-4.2-2.3-1.2-3.4 0-5.7-1.5-5.1-0.2-4.7 1.3-4.6 2.6-1.1 0.2-2.1 2.9-4.9 0.8-4.1-1.1-3-0.8-4.1-0.1-5.9 2.2-3.6 1-4.1 2.8-0.2 3.2-1.3 2.2-1.2 2.4-0.1 3.4-3.6 4.9-4 1.8-3.2-0.6-2.8 2.4 0.8 3.3-4.4 0.3-3.9 2-2.9 1.8 2.8 1.4 2.7 1.2 4.3z"
                             id="MG"
                             name="Madagascar"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M449.3 335.9l2.2-0.2-3.2 5.7-1.8 4.6-1.8 8.6-1.1 3.1 0.4 3.5 1.3 3.2 0.4 4.9 3 4.8 0.8 3.7 1.7 3.1 5.7 1.7 1.9 2.7 5.2-1.8 4.3-0.6 4.4-1.2 3.6-1.1 3.9-2.6 1.8-3.7 1.2-5.4 1.2-1.9 4-1.7 6.1-1.5 4.9 0.3 3.4-0.6 1.2 1.4-0.6 3.1-3.5 3.8-1.8 3.9 0.9 1.1-1.2 2.8-2.1 5-1.2-1.7-1.1 0.1-1.1 0.1-2.5 3.9-0.9-0.8-0.7 0.3-0.1 1-5.2-0.1-5.2 0-0.5 3.6-2.5 0.1 1.8 2.1 1.9 1.5 0.5 1.4 0.8 0.4-0.4 2.2-7.2 0-3.3 5.2 0.7 1.2-0.8 1.5-0.4 1.9-5.6-6.9-2.6-2.1-4.4-1.7-3.2 0.5-4.8 2.4-2.9 0.6-3.7-1.7-4.1-1.2-4.8-2.9-4.1-0.9-5.9-3-4.3-3.1-1.1-1.7-3.1-0.4-5.4-2-1.9-2.9-5.4-3.7-2.2-4-0.8-3.2 1.9-0.6-0.3-1.8 1.6-1.7 0.4-2.2-1.5-2.9 0-2.5-1.3-3.3-3.8-6.4-4.6-5-1.9-4-4.1-2.6-0.7-1.6 1.7-3.9-2.4-1.5-2.5-3.2-0.2-4.4-2.8-0.6-2.3-3.3-1.7-3.2 0.3-2-1.5-4.8-0.3-4.9 0.8-2.5-3.1-2.6-1.9 0.3-2.4-1.7-1.8 2.6-0.1 3-1 4.9 1 2.6 2.8 4.4 0.4 1.6 0.7 0.4 0.1 2.2 1-0.1 0 4.2 1.3 1.6 0.5 2.3 2.7 3.2 0.4 6 1 2.8 0.9 3-0.3 3.4 2.6 0.2 1.6 2.9 1.5 2.9-0.3 1.2-2.8 2.3-1 0-0.7-3.9-2.9-3.7-3.4-3.1-2.5-1.6 1.2-4.7-0.1-3.5-2.1-2-3.1-2.8-0.9 0.8-1-1.7-3-1.5-2.2-3.8 0.5-0.4 2.1 0.3 2.7-2.4 1-2.9-2.9-4.6-2.6-1.7-0.8-4-0.6-4.3-0.8-5.1-0.2-5.8 6.3-0.5 7.1-0.7-0.9 1.3 7 3.1 10.9 4.5 10.8 0 4.3 0 0.8-2.7 9.4 0 1.3 2.3 2.1 2.1 2.4 2.8 0.8 3.3 0.4 3.6 2.3 1.9 4 1.9 4.8-5 4.5-0.2 3.2 2.6 1.6 4.4 0.9 3.8 2.4 3.6 0.2 4.5 0.9 3 3.9 2 3.6 1.4z"
@@ -1263,7 +1390,7 @@ function DashboardSection() {
                             d="M1010.2 378.8l0.1 14.8-3.1 4.3-0.4 4-5 1-7.7 0.5-2 2.3-3.6 0.3-3.6 0-1.4-1.2-3.1 0.9-5.3 2.7-1.1 2-4.3 2.8-0.8 1.7-2.4 1.3-2.7-0.9-1.5 1.6-0.9 4.4-4.5 5.3 0.2 2.2-1.6 2.7 0.4 3.7-2.4 1-1.3 0.8-0.9-2.7-1.6 0.7-1-0.1-1 1.8-4.4 0-1.5-1-0.8 0.6-1.7-1.9 0.3-1.9-0.7-0.7-1.2 0.6 0.3-2.1 1.1-1.6-2.3-2.7-0.6-1.8-1.3-1.4-1.1-0.2-1.3 0.9-1.9 0.9-1.5 1.4-2.4-0.5-1.6-1.7-0.9-0.2-1.5 0.9-0.9 0-0.3-2.4 0.3-2-0.5-2.4-2-1.8-1.1-3.7-0.2-4 1.9-1.2 1-3.8 1.8-0.1 3.9 1.8 3.2-1.3 2.1 0.4 0.9-1.4 22.5-0.1 1.3-4.5-1-0.8-2.5-27.7-2.4-27.7 8.5-0.1 18.6 14 18.7 14 1.3 3 3.5 1.8 2.6 1.1 0.1 4.1 6.2-0.7z"
                             id="ML"
                             name="Mali"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1548.4 364.2l-4.1 4.2-0.8 2.3-3 1.5-2.8 2.8-3.9 0.3-1.5 6.9-2.2 1.2 3.5 5.6 4.1 4.7 2.9 4.3-1.4 5.5-1.8 1.2 1.8 3.2 4.3 5.1 1 3.6 0.2 3 2.7 5.9-2.6 6-2.2 6.6-0.9-4.8 1.3-4.9-2.2-3.8-0.2-7-2.6-3.4-2.7-7.6-2-8.1-3.1-5.4-3.2 3.3-5.8 4.5-3.3-0.5-3.6-1.5 0.9-8-2-6-5.3-7.4 0.3-2.3-3.4-0.9-4.6-5.2-1.1-5.2 2.1 1-0.6-4.6 2.5-1.5-1-2.7 1-2.2-0.9-6.7 4.6 1.5 1.6-5.3-0.3-3.1 2-5.4-0.9-3.7 6.2-4.4 4.2 1.1-1.4-3.9 1.7-1.2-1-2.4 3.1-0.5 2.7 3.8 2.7 1.5 1.3 4.9 0.9 5.3-4.2 5.4 0.7 7.6 5.6-1.1 2.4 5.9 3.7 1.3-0.8 5.3 4.5 2.4 2.6 1.2 3.8-1.9 0.5 2.7z"
@@ -1327,7 +1454,7 @@ function DashboardSection() {
                             d="M959.2 341.5l-8.5 0.1 2.4 27.7 2.5 27.7 1 0.8-1.3 4.5-22.5 0.1-0.9 1.4-2.1-0.4-3.2 1.3-3.9-1.8-1.8 0.1-1 3.8-1.9 1.2-3.6-4.4-3.4-4.8-3.6-1.7-2.7-1.8-3.1 0-2.8 1.4-2.7-0.5-2 2-0.4-3.4 1.6-3.2 0.8-6-0.4-6.4-0.6-3.2 0.6-3.2-1.4-3-2.8-2.8 1.3-2.1 21.7 0-0.9-9.3 1.5-3.3 5.2-0.5 0.2-16.5 18 0.4 0.2-9.8 20.5 15.6z"
                             id="MR"
                             name="Mauritania"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           {/* Malawi with anchor wrapper */}
                           <a
@@ -1427,13 +1554,13 @@ function DashboardSection() {
                             d="M1068.6 355l1.6 10 2.2 1.7 0.1 2 2.4 2.2-1.2 2.8-1.8 13-0.2 8.4-7 6-2.3 8.5 2.4 2.4 0 4.1 3.7 0.1-0.6 3.1-1.5 0.3-0.2 2.1-1 0.1-3.9-7-1.4-0.3-4.3 3.6-4.4-1.9-3-0.3-1.6 0.9-3.3-0.2-3.3 2.7-2.9 0.2-6.8-3.3-2.7 1.5-2.9-0.1-2.1-2.4-5.6-2.4-6.1 0.8-1.4 1.3-0.8 3.7-1.6 2.6-0.4 5.8-4.3-3.7-2 0-1.9 1.9 0.1-4.4-6.5-1.5-0.2-3.1-3.1-4.2-0.8-2.9 0.5-3.1 3.6-0.3 2-2.3 7.7-0.5 5-1 0.4-4 3.1-4.3-0.1-14.8 7.8-2.8 16-12.6 18.8-12.3 8.8 2.8 3.2 3.5 3.8-2.4z"
                             id="NE"
                             name="Niger"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1066.2 421.7l2.3 2.5-0.6 1.2-0.3 2.1-4.7 5-1.4 4.1-0.8 3.3-1.2 1.5-1.1 4.5-3 2.6-0.8 3.2-1.3 2.6-0.5 2.7-3.9 2.2-3.2-2.7-2.1 0.1-3.4 3.8-1.6 0-2.7 6.2-1.4 4.6-5.9 2.3-2.1-0.3-2.2 1.4-4.5-0.1-3.1-4.1-1.9-4.6-4-4.2-4.2 0-5 0 0.3-10.3-0.2-4.1 1.1-4 1.7-2 2.8-4-0.6-1.7 1.1-2.6-1.3-3.8 0.2-2.1 0.4-5.8 1.6-2.6 0.8-3.7 1.4-1.3 6.1-0.8 5.6 2.4 2.1 2.4 2.9 0.1 2.7-1.5 6.8 3.3 2.9-0.2 3.3-2.7 3.3 0.2 1.6-0.9 3 0.3 4.4 1.9 4.3-3.6 1.4 0.3 3.9 7 1-0.1z"
                             id="NG"
                             name="Nigeria"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M519.6 405.5l-0.5 0.7-0.5 1.4 0.4 2.3-1.5 2.2-0.8 2.6-0.5 2.8 0.2 1.7-0.1 2.9-0.9 0.6-0.7 2.8 0.2 1.7-1.2 1.6 0.1 1.7 0.8 1.1-1.4 1.4-1.7-0.5-0.8-1.3-1.8-0.5-1.3 0.8-3.6-1.7-0.9 0.8-1.8-2-2.5-2.6-1.1-2.1-2.2-2.1-2.5-2.9 0.7-1 0.8 1 0.5-0.4 1.8-0.3 0.8-1.5 0.8 0 0.2-3.2 1.3-0.1 1.2 0 1.4-1.7 1.5 1.3 0.6-0.8 1.2-0.8 2.1-1.7 0.2-1.4 0.5 0.1 0.9-1.5 0.6-0.2 0.9 1 1.1 0.2 1.3-0.8 1.4 0 2-0.8 0.9-0.9 1.9 0.1z"
@@ -1605,7 +1732,7 @@ function DashboardSection() {
                             d="M938.9 324.3l-0.1 0.4-0.1 1.2-0.2 9.8-18-0.4-0.2 16.5-5.2 0.5-1.5 3.3 0.9 9.3-21.7 0-1.3 2.1 0.3-2.7 0.1 0 12.5-0.5 0.7-2.3 2.4-2.9 2-8.9 7.9-6.9 2.7-8.1 1.8-0.5 1.9-5 4.6-0.7 2 0.9 2.5 0 1.8-1.5 3.4-0.2-0.1-3.4 0.9 0z"
                             id="EH"
                             name="Western Sahara"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1240.5 315l5 0.6 1.7 3.1 3.9-0.2 2.7 5.6 2.9 1.4 1.2 2.3 4 2.7 0.7 2.6-0.4 2.2 0.9 2.1 1.8 1.8 0.9 2.1 1 1.6 1.8 1.3 1.5-0.5 1.3 2.5 0.3 1.4 2.7 6.6 16.9 3.2 1-1.4 3 4.6-2.6 12.8-16.3 6.4-15.9 2.5-5 2.9-3.5 6.7-2.6 1.1-1.5-2.1-2.1 0.3-5.5-0.7-1.1-0.6-6.4 0.1-1.5 0.6-2.4-1.6-1.3 3.1 0.8 2.7-2.4 2.1-0.9-2.8-1.8-1.9-0.5-2.6-3.1-2.3-3.3-5.4-1.9-5.2-4.1-4.4-2.5-1.1-4.1-6.1-0.9-4.4 0-3.8-3.6-7.2-2.8-2.5-3-1.3-2.1-3.7 0.2-1.4-1.8-3.4-1.7-1.4-2.5-4.8-3.8-5.1-3.1-4.4-2.7 0 0.5-3.5 0.1-2.3 0.4-2.6 6.2 1.1 2.1-2 1.1-2.3 4.1-0.9 0.7-2.2 1.6-1-6-6.5 10.4-3.2 0.9-1 6.8 1.8 8.6 4.5 16.8 12.9 10.2 0.5z"
@@ -1616,7 +1743,7 @@ function DashboardSection() {
                             d="M1191 409.2l-0.7 5.5-2 6.4-3.3 3.1-2.3 5-0.5 2.6-2.6 1.8-1.5 6.7 0 0.8-0.8-0.2 0.1-3.2-0.8-2.2-2.9-2.5-0.9-4.6 0.6-4.8-2.6-0.4-0.4 1.4-3.4 0.4 1.5 1.8 0.5 3.9-3 3.5-2.7 4.6-2.9 0.7-4.8-3.7-2.1 1.3-0.5 1.8-2.9 1.3-0.2 1.3-5.6 0-0.8-1.3-4.1-0.3-2 1.1-1.6-0.5-2.9-3.8-1-1.7-4.1 0.9-1.5 2.9-1.3 5.8-2 1.2-1.7 0.7-0.5-0.3-1.9-1.9-0.4-2 0.8-2.6 0-2.7-3.3-4-0.7-2.7 0-1.6-2.1-1.9-0.1-3.7-1.3-2.5-1.9 0.4 0.5-2.4 1.4-2.6-0.7-2.7 1.8-2-1.2-1.5 1.3-3.9 2.5-4.8 4.8 0.5-1.1-25.5 0-2.7 6.4 0-0.5-12.8 22.3 0 21.5 0 22.1 0 2.1 6.3-1.2 1.1 1.2 6.7 2.5 7.6 2.2 1.6 3.2 2.4-2.7 3.6-4 1.1-1.7 2-0.3 4.2-2 9.5 0.7 2.5z"
                             id="SD"
                             name="Sudan"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           {/* South Sudan with anchor wrapper */}
                           <a
@@ -1628,7 +1755,7 @@ function DashboardSection() {
                             }}
                           >
                             <path
-                              className="South-Sudan"
+                              className="SouthSudan"
                               d="M1178.1 441.1l0.2 5-0.8 1.9-3 0.2-1.9 3.6 3.5 0.5 3 3.1 1 2.6 2.6 1.5 3.5 7-3.8 4.2-3.4 3.8-3.5 3-4 0-4.5 1.5-3.6-1.5-2.3 1.8-5.1-4.3-1.4-2.7-3.1 1.3-2.6-0.4-1.5 1.1-2.6-0.8-3.5-5.3-0.9-2-4.3-2.6-1.4-3.8-2.4-2.8-3.9-3.3-0.1-2.1-3.1-2.6-3.9-2.5 1.7-0.7 2-1.2 1.3-5.8 1.5-2.9 4.1-0.9 1 1.7 2.9 3.8 1.6 0.5 2-1.1 4.1 0.3 0.8 1.3 5.6 0 0.2-1.3 2.9-1.3 0.5-1.8 2.1-1.3 4.8 3.7 2.9-0.7 2.7-4.6 3-3.5-0.5-3.9-1.5-1.8 3.4-0.4 0.4-1.4 2.6 0.4-0.6 4.8 0.9 4.6 2.9 2.5 0.8 2.2-0.1 3.2 0.8 0.2z"
                               id="SS"
                               name="South-Sudan"
@@ -1665,13 +1792,13 @@ function DashboardSection() {
                             d="M918 408l0.2 4 1.1 3.7 2 1.8 0.5 2.4-0.3 2-0.8 0.4-3.1-0.5-0.4 0.7-1.2 0.1-4.1-1.5-2.7-0.1-10.4-0.3-1.5 0.8-1.9-0.2-3 1-0.8-4.9 5.1 0.1 1.4-0.9 1 0 2.1-1.5 2.4 1.3 2.4 0.2 2.5-1.5-1.1-1.8-1.9 1-1.7 0-2.2-1.6-1.8 0.1-1.3 1.6-6.1 0.1-2.3-5-2.7-2.2 2.5-1.3 2.8-4.5 1.4-3.3 2-2 2.7 0.5 2.8-1.4 3.1 0 2.7 1.8 3.6 1.7 3.4 4.8 3.6 4.4z"
                             id="SN"
                             name="Senegal"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M928.5 447.9l-2.6 3-2.6 3.4-0.3 1.9-1.4 2.1-1.5-0.5-4-2.6-3-3.4-0.9-2.4-0.7-4.7 3.1-2.9 0.6-1.7 1-1.4 1.6-0.2 1.3-1.2 4.5 0 1.6 2.3 1.2 2.7-0.2 1.9 0.9 1.7-0.1 2.3 1.5-0.3z"
                             id="SL"
                             name="Sierra Leone"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M492.5 415.9l-0.7 1.5-3.3-0.1-2-0.6-2.2-1.3-3-0.4-1.5-1.4 0.3-0.9 2-1.6 1.2-0.7-0.3-0.8 1.4-0.4 1.6 0.6 1.1 1.2 1.6 1.1 0.1 0.8 2.5-0.7 1.2 0.4 0.7 0.7-0.7 2.6z"
@@ -1755,13 +1882,13 @@ function DashboardSection() {
                             d="M1119.2 376.1l1.1 25.5-4.8-0.5-2.5 4.8-1.3 3.9 1.2 1.5-1.8 2 0.7 2.7-1.4 2.6-0.5 2.4 1.9-0.4 1.3 2.5 0.1 3.7 2.1 1.9 0 1.6-3.6 1.1-2.8 2.6-4 7-5.2 3-5.5-0.4-1.6 0.6 0.6 2.2-2.9 2.3-2.4 2.5-7.1 2.4-1.4-1.4-1-0.2-1 1.7-4.6 0.5 0.8-1.8-1.8-4.4-0.8-2.6-2.5-1.1-3.4-3.8 1.2-3 2.6 0.6 1.6-0.4 3.2 0-3.2-5.8 0.2-4.3-0.5-4.2-2.3-4.1 0.6-3.1-3.7-0.1 0-4.1-2.4-2.4 2.3-8.5 7-6 0.2-8.4 1.8-13 1.2-2.8-2.4-2.2-0.1-2-2.2-1.7-1.6-10 5.5-3.5 22.5 12.3 22.6 12.3z"
                             id="TD"
                             name="Chad"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M991.4 431.2l-0.7 3.4 1.7 1.9 2 2.2 0.2 3.2 1.2 1.3-0.3 14.8 1.4 4.4-4.5 1.4-1.3-2.3-1.5-4.1-0.5-3.2 1.3-5.7-1.4-2.4-0.6-5 0-4.7-2.3-3.3 0.4-2 4.9 0.1z"
                             id="TG"
                             name="Togo"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1577.5 410.2l-5.3-0.9-7.1 1.2-3.1 5.3 2.1 7.8-5.3-3-4.8 0.2 0.3-5.1-4.9 0 0.2 7.1-2.2 9.4-1.4 5.7 0.7 4.6 3.7 0.2 2.7 5.9 1.3 5.5 3.4 3.7 3.4 0.7 3.1 3.4-1.7 2.6-3.7 0.8-0.6-3.3-4.8-2.8-0.9 1.1-2.3-2.4-1.2-3.2-3.2-3.6-2.9-3.1-0.7 3.8-1.3-3.6 0.4-4 1.2-6.1 2.2-6.6 2.6-6-2.7-5.9-0.2-3-1-3.6-4.3-5.1-1.8-3.2 1.8-1.2 1.4-5.5-2.9-4.3-4.1-4.7-3.5-5.6 2.2-1.2 1.5-6.9 3.9-0.3 2.8-2.8 3-1.5 2.7 2 0.9 3.9 3.8 0.3-0.4 6.7 1 5.8 5.3-3.8 1.9 1.1 3.2-0.2 0.8-2.2 4.3 0.4 5 5.2 1.3 6.4 5.3 5.6 0.4 5.4-1.5 2.9z"
@@ -1787,7 +1914,7 @@ function DashboardSection() {
                             d="M1048.2 289.1l-0.1 4.9-2.6 1.8-1.6 2.1-3.6 2.5 0.6 2.6-0.4 2.8-2.6 1.4-2.6-11.5-3.4-2.6-0.1-1.5-4.5-3.9-0.6-4.8 3.2-3.6 1.1-5.3-1-6.1 1-3.3 5.7-2.5 3.7 0.7 0 3.3 4.4-2.4 0.4 1.2-2.5 3.2 0.1 2.9 1.9 1.6-0.5 5.6-3.5 3.2 1.2 3.5 2.8 0.1 1.4 3.1 2.1 1z"
                             id="TN"
                             name="Tunisia"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Turkey"
@@ -2008,7 +2135,7 @@ function DashboardSection() {
                             d="M1222.1 512.6l-3.3-5.3-0.2-23.4 4.9-7.2 1.5-2.1 3.6-0.1 5-4.5 7.3-0.3 15.6-19.3-4.8 0.1-18.7-7.6-2.2-2.3-2.2-3.1-2.2-3.6 1.2-2.2 1.9-3.5 1.9 1.2 1.2 2.7 2.7 2.7 2.8 0 5.2-1.7 6.1-0.7 4.9-2 2.8-0.4 2-1.2 3.2-0.2 1.8-0.2 2.5-0.9 3-0.7 2.5-2.2 2.2 0 0.2 1.8-0.4 3.7 0.2 3.4-1.1 2.3-1.4 7-2.4 7.1-3.3 8.2-4.6 9.4-4.7 7.2-6.6 8.8-5.6 5.2-8.4 6.4-5.3 4.8-6.2 7.8-1.3 3.4-1.3 1.5z"
                             id="SO"
                             name="Somalia"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             d="M1097.8 230.8l-1.2 0.3-2.9 1-0.1 1.3-0.7-0.1-0.6-2.3-1.3-0.7-1.2-1.7 0.8-1.4 1.2-0.4 0.5-2.1 0.9-0.4 0.8 0.9 1 0.4 0.8 1 0.9 0.3 1.1 1.2 0.7-0.1-0.4 1.6-0.6 0.7 0.3 0.5z"
@@ -2019,7 +2146,7 @@ function DashboardSection() {
                             d="M1159.4 644.7l2.2 9 1.1 4.6-1.4 7.1 0.4 2.3-2.7-1.1-1.7 0.4-0.6 1.9-1.7 2.4-0.1 2.2 3.1 3.5 3.2-0.7 1.4-2.8 4.1 0-1.7 4.7-1 5.3-1.7 2.9-4 3.3-1.1 0.9-2.6 3.3-1.8 3.3-3.5 4.6-6.7 6.6-4.1 3.8-4.3 3-5.9 2.4-2.7 0.4-0.9 1.8-3.2-1-2.7 1.2-5.7-1.2-3.3 0.8-2.2-0.4-5.8 2.6-4.6 1-3.5 2.4-2.4 0.2-2.1-2.3-1.8-0.1-2.2-2.9-0.3 0.9-0.6-1.7 0.3-3.8-1.5-4.3 1.8-1.2 0.1-4.9-3.3-6-2.4-5.4 0-0.1-3.6-8.3 2.8-3.2 2 1.8 0.8 2.7 2.5 0.5 3.4 1.2 2.9-0.5 5-3.3 1.1-23.7 1.4 1 3 6.1-0.6 3.9 1.1 2.3 4-0.7 2.8-2.9 2.7-1.9 1.5-3.1 2.8-1.4 2.3 0.7 2.5 1.8 4.5 0.3 3.6-1.4 0.6-2 1.2-3.1 3-0.5 1.8-2.4 2-4.3 5.2-4.8 8.1-4.7 2.2 0 2.7 1.1 1.9-0.8 2.9 0.7z m-20.3 53.2l1.1-2 3.1-1 1.1-2.1 1.9-3.1-1.7-2-2.2-2-2.7 1.4-3.1 2.5-3.2 4 3.7 5 2-0.7z"
                             id="ZA"
                             name="South Africa"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="New Zealand"
@@ -2266,22 +2393,22 @@ function DashboardSection() {
                           <path
                             className="Comoros"
                             d="M 1233.2 581.3 1232.3 581.2 1232.1 580.8 1232.1 580.5 1232.6 580.6 1233.3 581.1 1233.2 581.3 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Comoros"
                             d="M 1236.9 579.4 1237.1 580.4 1237.1 581.1 1237 581.3 1236.8 581 1236.4 580.7 1236.3 580.5 1236 580.4 1235.4 580 1235.5 579.9 1236 580.1 1236.3 580 1236.5 579.6 1236.5 579.4 1236.8 579.3 1236.9 579.4 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Comoros"
                             d="M 1231.2 578.4 1230.7 578 1230.4 577.9 1230.1 577.7 1229.9 577.1 1230 576.8 1230 576.6 1230.2 575.4 1230.1 575.3 1230.3 574.9 1230.8 574.8 1231 575.1 1230.8 576.3 1230.9 576.6 1231.1 577 1231.2 577.5 1231.4 578.1 1231.2 578.4 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Cape Verde"
                             d="M 847.8 406.5 847.6 406.8 847.4 406.6 847.4 406.3 847.7 406.2 847.8 406.5 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Cape Verde"
@@ -2507,7 +2634,7 @@ function DashboardSection() {
                           <path
                             className="Mauritius"
                             d="M 1307.7 630.8 1308.1 631.7 1307.9 632.3 1307.5 632.7 1307.6 633 1307.3 633.3 1306.8 633.5 1306.3 633.5 1305.7 633.4 1305.6 633.5 1305.3 633.2 1305.5 633 1305.6 632.6 1305.7 631.9 1305.9 631.5 1306.4 631.1 1306.5 630.9 1306.7 630.4 1307.1 630.1 1307.5 630.2 1307.7 630.8 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Mauritius"
@@ -2775,17 +2902,17 @@ function DashboardSection() {
                           <path
                             className="Seychelles"
                             d="M 1249 562.1 1248.7 562.3 1248.2 562.3 1247.8 562.5 1247.4 562.5 1247.4 562.3 1247.9 562.3 1248.3 562.2 1248.7 561.9 1248.9 561.9 1249 562.1 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Seychelles"
                             d="M 1248.5 561.8 1248.3 561.9 1247.9 561.9 1247.9 561.7 1248.5 561.8 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Seychelles"
                             d="M 1300.4 531.5 1300.8 531.9 1300.6 532.2 1300.4 531.9 1300.1 531.7 1300.3 531.2 1300.4 531.5 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Turks and Caicos Islands"
@@ -2802,7 +2929,7 @@ function DashboardSection() {
                           <path
                             className="Tonga"
                             d="M 14.7 639.5 14.2 639.2 14.2 639 14.5 638.8 14.7 639.5 Z"
-                            fill="#dbdbdbff"
+                            fill="#d1ceceff"
                           />
                           <path
                             className="Tonga"
@@ -3053,39 +3180,35 @@ function DashboardSection() {
                     </div>
                   </TransformComponent>
                   <div className="map-title">
-                    <i class="ri-map-pin-line"></i> Interactive Map
+                    <i className="ri-map-pin-line"></i> Interactive Map
                   </div>
                   <div className="controls">
                     <div className="zoom-controls">
                       <button className="zoom-btn" onClick={() => zoomIn()}>
-                        <i class="ri-zoom-in-fill"></i>
+                        <i className="ri-zoom-in-fill"></i>
                       </button>
                       <button className="zoom-btn" onClick={() => zoomOut()}>
-                        <i class="ri-zoom-out-fill"></i>
+                        <i className="ri-zoom-out-fill"></i>
                       </button>
                     </div>
                     <button
                       className="reset-btn"
                       onClick={() => resetTransform()}
                     >
-                      <i class="ri-refresh-line"></i>
+                      <i className="ri-refresh-line"></i>
                     </button>
                   </div>
                   <div className="map-key">
                     <p>
-                      Map Key: <i class="ri-key-2-fill"></i>
+                      Map Key: <i className="ri-key-2-fill"></i>
                     </p>
-                    <div className="key-mefmi">
-                      MEFMI Member Countries:{" "}
-                      <i class="ri-checkbox-blank-circle-fill"></i>
-                    </div>
                     <div className="key-africa">
                       Rest of the Africa:{" "}
-                      <i class="ri-checkbox-blank-circle-fill"></i>
+                      <i className="ri-checkbox-blank-circle-fill"></i>
                     </div>
                     <div className="key-world">
                       Rest of the World:{" "}
-                      <i class="ri-checkbox-blank-circle-fill"></i>
+                      <i className="ri-checkbox-blank-circle-fill"></i>
                     </div>
                   </div>
                 </>
@@ -3105,7 +3228,7 @@ function DashboardSection() {
               options={{
                 plugins: {
                   legend: {
-                    display: false,
+                    display: true,
                   },
                 },
               }}
@@ -3122,17 +3245,37 @@ function DashboardSection() {
               </span>
             </h3>
             <Doughnut
-              data={chartData}
-              options={{
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: "left",
-                  },
-                },
-              }}
-            />
+  data={chartData}
+  options={{
+    plugins: {
+      legend: {
+        display: true,
+        position: "right",
+        labels: {
+          font: {
+            size: 10, // your font size
+          },
+          color: 'white', // set the label color here
+          padding: 8,
+        },
+      },
+      tooltip: {
+        mode: 'index',
+        enabled: true,
+      },
+    },
+    layout: {
+      padding: {
+        left: 15,
+        right: 5 ,
+        top: 0,
+        bottom: 20,
+      },
+    },
+  }}
+/>
           </div>
+
           <div className="line-chart-container">
             <h3>
               {" "}
@@ -3146,7 +3289,7 @@ function DashboardSection() {
               options={{
                 plugins: {
                   legend: {
-                    display: false,
+                    display: true,
                   },
                 },
               }}

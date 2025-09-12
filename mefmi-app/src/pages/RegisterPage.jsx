@@ -64,7 +64,7 @@ function RegisterPage() {
             <input type="text" />
           </div>
 
-          <button className="signin-btn" onClick={register}>SIGN IN</button>
+          <button className="signin-btn" onClick={register}>SIGN UP</button>
           <br />
           <div className="dont-have-account">
             Already have an account? <Link to="/login">Sign In</Link>
