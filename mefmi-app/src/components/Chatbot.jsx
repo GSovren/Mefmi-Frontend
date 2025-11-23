@@ -11,7 +11,7 @@ function Chatbot() {
   return (
     <div>
       <div className="closed-chatbot" onClick={toggleChatbot}>
-        <i className="ri-chat-ai-fill"></i>
+        AI Chatbot<i className="ri-chat-ai-fill"></i>
       </div>
       
       <div className={display ? "open-chatbot active" : "open-chatbot"}>

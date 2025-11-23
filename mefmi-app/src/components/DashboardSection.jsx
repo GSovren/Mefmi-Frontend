@@ -1,11 +1,17 @@
 import "../components/DashboardSection.css";
 import "../components/DashboardSectionMap.css";
+import {
+  aggregatCardsURL,
+  interactiveMapUrl,
+  debtCompositionChartsURL,
+} from "../data/api/ApiCalls";
 import { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Chart as ChartJS, defaults } from "chart.js/auto";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
+import memberCountriesMap from "../assets/Mefmi-member-countries.png";
+import AFDBlogo from '../assets/african-development-bank-logo-03.png'
 import sourceData from "../data/sourceData.json";
-import Playstore from "../assets/Playstore.png";
-import Appstore from "../assets/Appstore.png";
 import angolaSVG from "../assets/ao.svg";
 import burundiSVG from "../assets/bi.svg";
 import BotswanaSVG from "../assets/bw.svg";
@@ -52,18 +58,115 @@ defaults.plugins.title.align = "start";
 defaults.plugins.title.font.size = 16;
 defaults.plugins.title.color = "black";
 
-const url = "https://dummyjson.com/carts";
+// const url = "https://dummyjson.com/carts";
+// const url = "https://mefmi-mock-api.onrender.com/api/v1/dashboard/interactive-map";
 
 //-----------------------------------------------------------DASHBOARD FUNCTIONS START------------------------------------------------------
 function DashboardSection() {
   const [results, setResults] = useState([]);
+  const [mapResults, setMapResults] = useState([]);
   const [countryMenu, setCountryMenu] = useState(false);
+  // Define initial defaults
+  const initialCountryFilter = "";
+  const initialSelectedMetric = "public_debt";
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [countryFilter, setCountryFilter] = useState("");
+  const [countryFilter, setCountryFilter] = useState(initialCountryFilter);
+  const [selectedMetric, setSelectedMetric] = useState(initialSelectedMetric);
+  const [selectedRegion, setSelectedRegion] = useState("");
   const [mapSrc, setMapSrc] = useState(angolaSVG); // default to Angola or null
   const [currentCountryIndex, setCurrentCountryIndex] = useState(0); // Inside your component
-  const [selectedMetric, setSelectedMetric] = useState("public_debt");
   const [countryColorMap, setCountryColorMap] = useState({});
+  const [selectedCountryName, setSelectedCountryName] = useState("");
+  const [hoveredCountry, setHoveredCountry] = useState(null);
+  const [overallTotal, setOverallTotal] = useState(0);
+
+
+  const regionCountries = {
+  "Southern Africa": [
+    "Lesotho",
+    "Eswatini",
+    "Botswana",
+    "Namibia",
+    "Zimbabwe",
+    "Mozambique",
+    "Malawi",
+    "Zambia",
+    "Angola",
+  ],
+  "Eastern Africa": [
+    "Tanzania",
+    "Burundi",
+    "Rwanda",
+    "Kenya",
+    "Uganda",
+    "SouthSudan",
+  ],
+  "Northern Africa": [], // No countries highlighted
+  "Central Africa": [],   // No countries highlighted
+  "Western Africa": [],   // No countries highlighted
+};
+
+const highlightedCountries = regionCountries[selectedRegion] || [];
+  
+
+  // ------------------------------------------------ API CALL START -------------------------------------------------------------
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await fetch(aggregatCardsURL);
+        const data = await response.json();
+        setResults(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    getData();
+
+    console.log(results, "results"); 
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    async function getMapData() {
+      try {
+        const response = await fetch(interactiveMapUrl);
+        const data = await response.json();
+        setMapResults(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    getMapData();
+
+    console.log(mapResults, "results"); 
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  // ------------------------------------------------ API CALL END -------------------------------------------------------------
+
+  useEffect(() => {
+    const total = sourceData.reduce((sum, country) => {
+      // Check if the metric exists for the country
+      const value = country[selectedMetric];
+      return value != null ? sum + value : sum;
+    }, 0);
+    setOverallTotal(total);
+  }, [sourceData, selectedMetric]);
+
+  const handleResetFilters = () => {
+    setCountryFilter(initialCountryFilter);
+    setSelectedMetric(initialSelectedMetric);
+    setSelectedRegion("")
+  };
 
   // Handles metric change for entire dashbord page (Affecting Imteractive map and Charts)
   const handleMetricChange = (e) => {
@@ -71,12 +174,25 @@ function DashboardSection() {
   };
   // Metrics
   const metricLabels = {
-    gdp: "Total Debt",
-    gdp_growth: "External Debt",
-    inflation_rate: "Domestic Debt",
-    unemployment_rate: "Yearly Financing",
+    total_debt: "Total Debt",
+    external_debt: "External Debt",
+    domestic_debt: "Domestic Debt",
+    yearly_financing: "Yearly Financing",
     public_debt: "Public Debt",
   };
+
+  // ------------------------------------------------TO BE LABLED (METRIC-DASH)-------------------------------------------------------------
+
+  // Calculate current data based on dropdown selection only
+  const currentCountryData = sourceData.find(
+    (item) => item.name === countryFilter
+  );
+
+  // Show metric only if countryFilter is set
+  const metricValue =
+    countryFilter && currentCountryData
+      ? currentCountryData[selectedMetric]
+      : null;
 
   // ------------------------------------------------FUNCTION TO INTERPOLATE COLORS-------------------------------------------------------------
   // Define your color stops for the gradient
@@ -85,8 +201,8 @@ function DashboardSection() {
   //   { stop: 1, color: "#00ff00" }, // green for highest
   // ];
   const colorStops = [
-    { stop: 0, color: "#cc0000" }, // vibrant, darkened red
-    { stop: 1, color: "#00ed00" }, // vibrant, darkened green
+    { stop: 0, color: "#00ed00" }, // vibrant, darkened green
+    { stop: 1, color: "#cc0000" }, // vibrant, darkened red
   ];
 
   // Function to interpolate between two colors
@@ -121,45 +237,85 @@ function DashboardSection() {
 
   //-------------------------------------------------------------FUNCTION TO GET CHART DATA------------------------------------------------------------------------
   const getChartData = () => {
-    const labels = sourceData.map((item) => item.name);
-    const dataValues = sourceData.map((item) => item[selectedMetric]);
+  const labels = sourceData.map((item) => item.name);
+  const dataValues = sourceData.map((item) => item[selectedMetric]);
 
-    const minVal = Math.min(...dataValues);
-    const maxVal = Math.max(...dataValues);
-    const invertColors = selectedMetric === "inflation_rate";
+  const minVal = Math.min(...dataValues);
+  const maxVal = Math.max(...dataValues);
+  const invertColors = selectedMetric === "inflation_rate";
 
-    const backgroundColors = dataValues.map((value, index) => {
-      const countryName = sourceData[index].name;
-      if (countryFilter && countryName === countryFilter) {
-        // Highlight the selected country
+  // Determine which countries to highlight
+  let highlightedCountries = [];
+
+  if (countryFilter) {
+    // Override: highlight only the country filter
+    highlightedCountries = [countryFilter];
+  } else if (
+    selectedRegion === "Southern Africa" ||
+    selectedRegion === "Eastern Africa"
+  ) {
+    highlightedCountries = regionCountries[selectedRegion];
+  } else if (
+    selectedRegion === "Northern Africa" ||
+    selectedRegion === "Central Africa" ||
+    selectedRegion === "Western Africa"
+  ) {
+    // Dim all countries in these regions
+    highlightedCountries = [];
+  } else {
+    // No region and no country filter: highlight all
+    highlightedCountries = sourceData.map((item) => item.name);
+  }
+
+  // Build backgroundColor array
+  const backgroundColors = dataValues.map((value, index) => {
+    const countryName = sourceData[index].name;
+
+    if (countryFilter) {
+      // When countryFilter is active, only highlight that country
+      if (countryName === countryFilter) {
         return getColorForValue(value, minVal, maxVal, invertColors);
-      } else if (countryFilter && countryName !== countryFilter) {
-        // Dim other countries
+      } else {
+        return "#8495a2ff"; // dim others
+      }
+    } else {
+      // No country filter, apply region logic
+      if (
+        selectedRegion &&
+        (selectedRegion === "Northern Africa" ||
+          selectedRegion === "Central Africa" ||
+          selectedRegion === "Western Africa")
+      ) {
+        // Dim all countries if specific regions are selected
         return "#8495a2ff";
       } else {
-        // No filter applied, show normal colors
-        return getColorForValue(value, minVal, maxVal, invertColors);
+        // Highlight only countries in the region
+        if (highlightedCountries.includes(countryName)) {
+          return getColorForValue(value, minVal, maxVal, invertColors);
+        } else {
+          return "#8495a2ff";
+        }
       }
-    });
+    }
+  });
 
-    return {
-      labels,
-      datasets: [
-        {
-          label: metricLabels[selectedMetric],
-          data: dataValues,
-          backgroundColor: backgroundColors,
-          borderRadius: 2,
-          borderWidth: 1,
-          borderColor: "darkGreen",
-          pointRadius: 4,
-          responsive: true,
-          maintainAspectRatio: true,
-        },
-        
-      ],
-    };
+  return {
+    labels,
+    datasets: [
+      {
+        label: metricLabels[selectedMetric],
+        data: dataValues,
+        backgroundColor: backgroundColors,
+        borderRadius: 2,
+        borderWidth: 1,
+        borderColor: "darkGreen",
+        pointRadius: 4,
+        responsive: true,
+        maintainAspectRatio: true,
+      },
+    ],
   };
+};
 
   const chartData = getChartData();
 
@@ -184,44 +340,85 @@ function DashboardSection() {
   };
 
   // 2. Update fill colors whenever metric changes
-  useEffect(() => {
-    // Generate color mapping based on current metric
-    const dataValues = sourceData.map((item) => item[selectedMetric]);
-    const minVal = Math.min(...dataValues);
-    const maxVal = Math.max(...dataValues);
-    const invertColors = selectedMetric === "inflation_rate";
+useEffect(() => {
+  // Generate color mapping based on current metric
+  const dataValues = sourceData.map((item) => item[selectedMetric]);
+  const minVal = Math.min(...dataValues);
+  const maxVal = Math.max(...dataValues);
+  const invertColors = selectedMetric === "inflation_rate";
 
-    const metricColorMap = {};
-    sourceData.forEach((item) => {
-      const countryName = item.name; // ensure matches class names
-      const value = item[selectedMetric];
-      const color = getColorForValue(value, minVal, maxVal, invertColors);
-      metricColorMap[countryName] = color;
-    });
-    setCountryColorMap(metricColorMap);
+  const metricColorMap = {};
+  sourceData.forEach((item) => {
+    const countryName = item.name; // ensure matches class names
+    const value = item[selectedMetric];
+    const color = getColorForValue(value, minVal, maxVal, invertColors);
+    metricColorMap[countryName] = color;
+  });
+  setCountryColorMap(metricColorMap);
 
-    // Now apply colors to the SVG map
-    Object.keys(countryColors).forEach((country) => {
-      let fillColor;
+  // List of 15 countries to dim when a countryFilter is active
+  const dimmedCountries = [
+    "Angola", "Botswana", "Burundi", "Eswatini", "Kenya",
+    "Lesotho", "Malawi", "Mozambique", "Namibia", "Rwanda",
+    "South Sudan", "Tanzania", "Uganda", "Zambia", "Zimbabwe"
+  ];
 
-      if (countryFilter) {
-        // When a country is selected, highlight only that country
-        if (country === countryFilter) {
+  // Determine which countries to highlight based on region
+  let highlightedCountries = [];
+  if (
+    selectedRegion === "Southern Africa" ||
+    selectedRegion === "Eastern Africa"
+  ) {
+    highlightedCountries = regionCountries[selectedRegion];
+  } else if (
+    selectedRegion === "Northern Africa" ||
+    selectedRegion === "Central Africa" ||
+    selectedRegion === "Western Africa"
+  ) {
+    // Dim all countries
+    highlightedCountries = [];
+  } else {
+    // No region selected: highlight all
+    highlightedCountries = sourceData.map((item) => item.name);
+  }
+
+  // Apply colors to SVG map
+  Object.keys(countryColors).forEach((country) => {
+    let fillColor;
+
+    if (countryFilter) {
+      // When countryFilter is active:
+      if (country === countryFilter) {
+        // Highlight only the selected country
+        fillColor = metricColorMap[country] || countryColors[country];
+      } else if (dimmedCountries.includes(country)) {
+        // Dim the specified countries
+        fillColor = "#8495a2ff";
+      } else {
+        // For other countries not in the dim list, keep dimmed
+        fillColor = "#8495a2ff";
+      }
+    } else {
+      // When no countryFilter:
+      if (highlightedCountries.length === 0) {
+        // Dim all countries
+        fillColor = "#8495a2ff";
+      } else {
+        // Highlight only specified countries
+        if (highlightedCountries.includes(country)) {
           fillColor = metricColorMap[country] || countryColors[country];
         } else {
-          fillColor = "#8495a2ff"; // dim others
+          fillColor = "#8495a2ff";
         }
-      } else {
-        // No country filter, always use metric-based colors
-        fillColor = metricColorMap[country] || countryColors[country];
       }
+    }
 
-      // Apply the color to SVG elements
-      document.querySelectorAll(`.${country}`).forEach((elem) => {
-        elem.setAttribute("fill", fillColor);
-      });
+    document.querySelectorAll(`.${country}`).forEach((elem) => {
+      elem.setAttribute("fill", fillColor);
     });
-  }, [selectedMetric, countryFilter]);
+  });
+}, [selectedMetric, countryFilter, selectedRegion]);
+
 
   //-------------------------------------ARRAYS FOR (COUNTRY MAPS) AND (COUNTRY FLAGS) / COUNTRY MENU FUNCTIONS ----------------------------------------------------
 
@@ -272,6 +469,11 @@ function DashboardSection() {
     }
   };
 
+  const getMapByName = (countryName) => {
+    const country = countryMapsArray.find((c) => c.name === countryName);
+    return country ? country.svg : angolaSVG; // fallback if not found
+  };
+
   // Handler for previous button (cycling through array)
   const handlePrev = () => {
     setCurrentCountryIndex((prevIndex) => {
@@ -292,10 +494,7 @@ function DashboardSection() {
     });
   };
 
-  const getMapByName = (countryName) => {
-    const country = countryMapsArray.find((c) => c.name === countryName);
-    return country ? country.svg : angolaSVG; // fallback if not found
-  };
+  
 
   // Toggle Country menu display
   const toggleCountryMenu = () => {
@@ -310,24 +509,16 @@ function DashboardSection() {
     toggleCountryMenu();
   };
 
-  useEffect(() => {
-    async function getData() {
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        setResults(data.carts);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+  // Handle eplore more button in country-menu
+  const navigate = useNavigate();
+  const handleExploreMoreClick = () => {
+    if (selectedCountry) {
+      navigate("/explore", { state: { country: selectedCountry } });
+    } else {
+      // optionally handle case where no country is selected
+      navigate("/explore");
     }
-    getData();
-
-    console.log(results, "results");
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
+  };
 
   //-------------------------------------------------------------RETURN PRAMATERS FOR ACTUAL DASHBOARD PAGE-----------------------------------------------------------------------
   return (
@@ -340,7 +531,7 @@ function DashboardSection() {
         <div className="menu-overlay" onClick={toggleCountryMenu}></div>
         <div className="country-menu">
           <div className="menu-title">
-            MEFMI Countries{" "}
+            MEFMI Member Countries{" "}
             <i className="ri-close-circle-fill" onClick={toggleCountryMenu}></i>
           </div>
           <div className="country-container">
@@ -364,7 +555,7 @@ function DashboardSection() {
                 consequatur fuga vero ipsa saepe possimus cumque corrupti
                 fugiat. Quis maiores tenetur voluptas cum?
               </p>
-              <button>
+              <button className="dash-explore-more-btn" onClick={handleExploreMoreClick}>
                 Explore More <i className="ri-arrow-right-line"></i>
               </button>
               <div className="country-slider-icons">
@@ -372,7 +563,7 @@ function DashboardSection() {
                   <i className="ri-arrow-left-circle-fill"></i> Previous
                 </div>
                 <div className="slider-icon-next" onClick={handleNext}>
-                  Next Country<i className="ri-arrow-right-circle-fill"></i>
+                  Next<i className="ri-arrow-right-circle-fill"></i>
                 </div>
               </div>
             </div>
@@ -382,60 +573,110 @@ function DashboardSection() {
       <div className="dash-hero">
         <div className="explore-msg">
           <div className="msg">
-            <p>Explore and Discover Metrics Across </p>
-            <span>15 African Countries. </span>
+            Welcome To The MEMFI Sovereign Debt{" "}
+            <span>Statistics Dashboard. </span>
           </div>
-
-          <div className="hero-btns">
-            <a href="https://mefmi.org/" target="_blank">
-              <button>
-                MEFMI Website <i className="ri-earth-fill"></i>
-              </button>
-            </a>
-
-            <img src={Playstore} alt="" />
-            <img src={Appstore} alt="" />
-          </div>
+          {/* <img src={AFDBlogo} alt="" /> */}
         </div>
       </div>
 
       <div className="dashboard-inner-container">
         <div className="dash-container-left">
           <div className="dash-filters-container">
+            <p>
+              <div className="filters-container">
+                <i className="ri-filter-line"></i>&nbsp;FILTERS
+              </div>
+              
+              <div className="currency-filter">
+                  <div className="dash-currency-input-container">
+                    <label>Currency:</label>
+                    <div className="dash-inputs">
+                      <select name="" id="select-currency">
+                          <option value="USD">USD</option>
+                          <option value="PULA">PULA</option>
+                          <option value="RAND">RAND</option>
+                          <option value="KWACHA">KWACHA</option>
+                          <option value="ZIG">ZIG</option>
+                      </select>
+                      <div className="drop-icon">
+                    <i className="ri-arrow-drop-down-fill"></i>
+                  </div>
+                    </div>
+                  </div>
+              </div>
+            </p>
             <div className="dash-filters">
-              <p>
-                FILTERS <i className="ri-filter-line"></i>
-              </p>
-              <div className="dash-inputs">
-                <label htmlFor="select-metric">
-                  Filter according to metric data:
-                </label>
-                <select
+              
+              <div className="dash-inputs-container">
+                <div className="dash-filters-title">
+                *Select Dashboard Filters Below.
+              </div>
+                <div className="dash-inputs">
+                <label htmlFor="select-metric">By Metric:</label>
+                <div className="dash-select">
+                  <select
                   name=""
                   id="select-metric"
                   value={selectedMetric}
                   onChange={handleMetricChange}
                 >
-                  <option value="">-- select -- metric -- here --</option>
-                  <option value="gdp">Total Debt</option>
-                  <option value="gdp_growth">External Debt</option>
-                  <option value="inflation_rate">Domestic Debt</option>
-                  <option value="unemployment_rate">Yearly Financing</option>
                   <option value="public_debt">Public Debt</option>
+                  <option value="total_debt">Total Debt</option>
+                  <option value="external_debt">External Debt</option>
+                  <option value="domestic_debt">Domestic Debt</option>
+                  <option value="yearly_financing">Yearly Financing</option>
                 </select>
+                <div className="drop-icon">
+                    <i className="ri-arrow-drop-down-fill"></i>
+                  </div>
+                </div>               
               </div>
+
               <div className="dash-inputs">
-                <label htmlFor="select-country">Country:</label>
-                <select
+  <label htmlFor="select-metric">By Region:</label>
+  <div className="dash-select">
+    <select
+      id="select-region"
+  value={selectedRegion}
+  onChange={(e) => {
+    setSelectedRegion(e.target.value);
+    if (e.target.value !== "") {
+      setCountryFilter(""); // reset country filter when region is selected
+    }
+  }}
+    >
+      <option value="">-- Select Region --</option>
+      <option value="Northern Africa">Northern Africa</option>
+      <option value="Western Africa">Western Africa</option>
+      <option value="Central Africa">Central Africa</option>
+      <option value="Eastern Africa">Eastern Africa</option>
+      <option value="Southern Africa">Southern Africa</option>
+    </select>
+    <div className="drop-icon">
+      <i className="ri-arrow-drop-down-fill"></i>
+    </div>
+  </div>
+</div>
+
+              <div className="dash-inputs">
+                <label htmlFor="select-country">By Country:</label>
+                <div className="dash-select">
+                  <select
                   name=""
                   id="select-country"
-                  value={countryFilter}
-                  onChange={(e) => setCountryFilter(e.target.value)}
+  value={countryFilter}
+  onChange={(e) => {
+    setCountryFilter(e.target.value);
+    if (e.target.value !== "") {
+      setSelectedRegion(""); // reset region when country is selected
+    }
+  }}
                 >
-                  <option value="">-- select -- country -- here --</option>
+                  <option value="">-- No -- country -- selected --</option>
                   <option value="Angola">Angola</option>
                   <option value="Botswana">Botswana</option>
-                  <option value="Brurundi">Burundi</option>
+                  <option value="Burundi">Burundi</option>
                   <option value="Eswatini">Eswatini</option>
                   <option value="Kenya">Kenya</option>
                   <option value="Lesotho">Lesotho</option>
@@ -443,43 +684,108 @@ function DashboardSection() {
                   <option value="Mozambique">Mozambique</option>
                   <option value="Namibia">Namibia</option>
                   <option value="Rwanda">Rwanda</option>
-                  <option value="South6Sudan">South Sudan</option>
+                  <option value="SouthSudan">South Sudan</option>
                   <option value="Tanzania">Tanzania</option>
                   <option value="Uganda">Uganda</option>
                   <option value="Zambia">Zambia</option>
                   <option value="Zimbabwe">Zimbabwe</option>
                 </select>
+                <div className="drop-icon">
+                    <i className="ri-arrow-drop-down-fill"></i>
+                  </div>
+                </div>
               </div>
+              <div className="reset-filters">
+                <button id="reset-filters" onClick={handleResetFilters}>
+                  Reset Filters
+                </button>
+              </div>
+              </div>
+            
+
               <div className="color-codes-container">
                 <div className="color-key-header">Color Key:</div>
                 <div className="color-bar"></div>
                 <div className="color-key-labels">
-                  <div>Highest</div>
                   <div>Lowest</div>
+                  <div>Highest</div>
                 </div>
               </div>
             </div>
           </div>
           <div className="dash-cards-container">
-            <div className="dash-card">
-              <div className="card-label">Overall Total Debt</div>
-              <div className="card-count">$1,1003,00</div>
-            </div>
-            <div className="dash-card">
-              <div className="card-label">Overall External Debt</div>
-              <div className="card-count">$1,1003,00</div>
-            </div>
-            <div className="dash-card">
-              <div className="card-label">Overall Public Debt</div>
-              <div className="card-count">$1,1003,00</div>
-            </div>
-            <div className="dash-card">
-              <div className="card-label">Overall Domestic Debt</div>
-              <div className="card-count">$1,1003,00</div>
-            </div>
-            <div className="dash-card">
-              <div className="card-label">Yearly Financing</div>
-              <div className="card-count">$1,1003,00</div>
+            {/* {results && results.data && (
+              <div className="dash-card">
+                <div className="card-label">
+                  {results.data.overallDomesticDebt.title}
+                </div>
+                <div
+                  className="card-count"
+                >
+                  {results.data.overallDomesticDebt.averageInterestRate}
+                </div>
+              </div>
+            )} */}
+            <div className="dash-reports">
+              <div className="grey-bar"></div>
+              <div className="reports-heading">REPORTS</div>
+              <div className="reports-table">
+                <div className="reports-dash-title">
+                  Associated Reports for: &nbsp;
+                  {countryFilter ? <>{selectedCountryName}</> : " "}
+                </div>
+
+                <table id="reports-table">
+                  <thead>
+                    <th>Description</th>
+                    <th>Action</th>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Total Debt Report</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>External Debt Report</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Domestic Report</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Yearly Financing Report</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Public Report</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>External Debt Report</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -522,6 +828,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Angola");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Angola")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Angola"
@@ -531,32 +839,64 @@ function DashboardSection() {
                             />
                           </a>
 
-                          {/* Red circle marker on Angola */}
-                          <circle
-                            cx={1082} // approximate x coordinate, adjust as needed
-                            cy={570} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Angola */}
-                          <text
-                            x={1085} // offset x for label
-                            y={582} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Angola"
+                            onMouseEnter={() => setHoveredCountry("Angola")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Angola
-                          </text>
+                            {/* Red circle marker on Angola */}
+                            <circle
+                              cx={1072} // approximate x coordinate, adjust as needed
+                              cy={575} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Angola" ? "flex" : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Angola");
+                              }}
+                            />
+
+                            {/* Label for Angola */}
+                            <foreignObject
+                              x={1022} // offset x for label
+                              y={565} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Angola" ? "flex" : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Angola");
+                                }}
+                              >
+                                Angola
+                              </div>
+                            </foreignObject>
+                          </g>
+
                           <path
                             className="Angola"
                             d="M 1055.3 539 1053.8 534.2 1056.1 531.4 1057.8 530.3 1059.9 532.5 1057.9 533.9 1056.9 535.5 1056.7 538.3 1055.3 539 Z"
@@ -613,6 +953,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Burundi");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Burundi")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Burundi"
@@ -623,30 +965,68 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Burundi */}
-                          <circle
-                            cx={1155} // approximate x coordinate, adjust as needed
-                            cy={523} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Burundi */}
-                          <text
-                            x={1125} // offset x for label
-                            y={545} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                            }}
-                            className="country-label"
-                            id="label-Burundi"
+                            onMouseEnter={() => setHoveredCountry("Burundi")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Burundi
-                          </text>
+                            {/* Red circle marker on Burundi */}
+                            <circle
+                              cx={1155} // approximate x coordinate, adjust as needed
+                              cy={523} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Burundi"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Burundi");
+                              }}
+                            />
+
+                            {/* Label for Burundi */}
+                            <foreignObject
+                              x={1215} // offset x for label
+                              y={525} // offset y for label
+                              width={40}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Burundi"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "8px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Burundi");
+                                }}
+                              >
+                                Burundi
+                              </div>
+                            </foreignObject>
+                          </g>
+
                           <path
                             d="M1016.5 177.1l-0.4 4.2-1.3 0.2-0.4 3.5-4.4-2.9-2.5 0.5-3.5-2.9-2.4-2.5-2.2-0.1-0.8-2.2 3.9-1.2 3.6 0.5 4.5-1.3 3.1 2.7 2.8 1.5z"
                             id="BE"
@@ -717,6 +1097,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Botswana");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Botswana")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Botswana"
@@ -726,32 +1108,67 @@ function DashboardSection() {
                             />
                           </a>
 
-                          {/* Red circle marker on Botswana */}
-                          <circle
-                            cx={1105} // approximate x coordinate, adjust as needed
-                            cy={650} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Botswana */}
-                          <text
-                            x={1108} // offset x for label
-                            y={645} // offset y for label
-                            style={{
-                              fontSize: "8px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Botswana"
+                            onMouseEnter={() => setHoveredCountry("Botswana")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Botswana
-                          </text>
+                            {/* Red circle marker on Botswana */}
+                            <circle
+                              cx={1105} // approximate x coordinate, adjust as needed
+                              cy={650} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Botswana"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Botswana");
+                              }}
+                            />
+
+                            {/* Label for Botswana */}
+                            <foreignObject
+                              x={1103} // offset x for label
+                              y={635} // offset y for label
+                              width={40}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Botswana"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "7px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Botswana");
+                                }}
+                              >
+                                Botswana
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M1121.3 446.5l3.9 2.5 3.1 2.6 0.1 2.1 3.9 3.3 2.4 2.8 1.4 3.8 4.3 2.6 0.9 2-1.8 0.7-3.7-0.1-4.2-0.7-2.1 0.5-0.9 1.6-1.8 0.2-2.2-1.4-6.3 3.2-2.6-0.6-0.8 0.5-1.6 3.9-4.3-1.3-4.1-0.6-3.6-2.4-4.7-2.2-3 2.1-2.2 3.2-0.5 4.5-3.6-0.3-3.9-1.1-3.3 3.4-3 6-0.6-1.9-0.3-2.9-2.6-2.1-2.1-3.3-0.5-2.3-2.7-3.4 0.5-1.9-0.6-2.7 0.4-5 1.4-1.1 2.8-6.5 4.6-0.5 1-1.7 1 0.2 1.4 1.4 7.1-2.4 2.4-2.5 2.9-2.3-0.6-2.2 1.6-0.6 5.5 0.4 5.2-3 4-7 2.8-2.6 3.6-1.1 0.7 2.7 3.3 4 0 2.7-0.8 2.6 0.4 2 1.9 1.9 0.5 0.3z"
                             id="CF"
@@ -1219,6 +1636,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Kenya");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Kenya")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Kenya"
@@ -1228,32 +1647,64 @@ function DashboardSection() {
                             />
                           </a>
 
-                          {/* Red circle marker on Kenya */}
-                          <circle
-                            cx={1210} // approximate x coordinate, adjust as needed
-                            cy={515} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Kenya */}
-                          <text
-                            x={1220} // offset x for label
-                            y={525} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Kenya"
+                            onMouseEnter={() => setHoveredCountry("Kenya")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Kenya
-                          </text>
+                            {/* Red circle marker on Kenya */}
+                            <circle
+                              cx={1210} // approximate x coordinate, adjust as needed
+                              cy={515} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Kenya" ? "flex" : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Kenya");
+                              }}
+                            />
+
+                            {/* Label for Kenya */}
+                            <foreignObject
+                              x={1215} // offset x for label
+                              y={520} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Kenya" ? "flex" : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Kenya");
+                                }}
+                              >
+                                Kenya
+                              </div>
+                            </foreignObject>
+                          </g>
+
                           <path
                             d="M1400.5 230.2l-0.2 1.4-6.9 3.4-1 2.6-6.4 0.7-0.6 4.1-5.8-0.9-3.2 1.3-4.1 3 1.2 1.5-1.1 1.4-9.6 1-7.1-2.1-5.5 0.5-0.6-3.6 6 1 1.4-1.9 4.1 0.6 5.3-4.6-7.2-3.4-3.2 1.6-4.6-2.4 3-4.1-1.7-0.6 0.3-2.8 3.1-0.9 9.2 2.2-0.5-3.7 2.5-1.4 8.2 2.7 1.6-0.7 8.6 0.2 7.9 0.6 3.4 2.3 3.5 1z"
                             id="KG"
@@ -1309,6 +1760,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Lesotho");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Lesotho")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Lesotho"
@@ -1318,32 +1771,67 @@ function DashboardSection() {
                             />
                           </a>
 
-                          {/* Red circle marker on Lesotho */}
-                          <circle
-                            cx={1142} // approximate x coordinate, adjust as needed
-                            cy={691} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Lesotho */}
-                          <text
-                            x={1155} // offset x for label
-                            y={702} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Lesotho"
+                            onMouseEnter={() => setHoveredCountry("Lesotho")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Lesotho
-                          </text>
+                            {/* Red circle marker on Angola */}
+                            <circle
+                              cx={1142} // approximate x coordinate, adjust as needed
+                              cy={691} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Lesotho"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Lesotho");
+                              }}
+                            />
+
+                            {/* Label for Lesotho */}
+                            <foreignObject
+                              x={1148} // offset x for label
+                              y={702} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Lesotho"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Lesotho");
+                                }}
+                              >
+                                Lesotho
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M1111.1 147.6l1 2.7-3.6 2-0.5 3.4-4.8 2.3-4.7 0-1.4-1.9-2.5-0.7-0.6-1.5 0.2-1.7-2.2-0.9-5.1-1.1-1.7-5.1 5.1-1.8 7.9 0.4 4.5-0.6 0.9 1.2 2.5 0.4 5 2.9z"
                             id="LT"
@@ -1415,6 +1903,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Mozambique");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Mozambique")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Mozambique"
@@ -1425,31 +1915,68 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Mozambique */}
-                          <circle
-                            cx={1180} // approximate x coordinate, adjust as needed
-                            cy={620} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Mozambique */}
-                          <text
-                            x={1190} // offset x for label
-                            y={630} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Mozambique"
+                            onMouseEnter={() => setHoveredCountry("Mozambique")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Mozambique
-                          </text>
+                            {/* Red circle marker on Mozambique */}
+                            <circle
+                              cx={1183} // approximate x coordinate, adjust as needed
+                              cy={615} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Mozambique"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Mozambique");
+                              }}
+                            />
+
+                            {/* Label for Mozambique */}
+                            <foreignObject
+                              x={1185} // offset x for label
+                              y={615} // offset y for label
+                              width={60}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Mozambique"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Mozambique");
+                                }}
+                              >
+                                Mozambique
+                              </div>
+                            </foreignObject>
+                          </g>
+
                           <path
                             d="M959.2 341.5l-8.5 0.1 2.4 27.7 2.5 27.7 1 0.8-1.3 4.5-22.5 0.1-0.9 1.4-2.1-0.4-3.2 1.3-3.9-1.8-1.8 0.1-1 3.8-1.9 1.2-3.6-4.4-3.4-4.8-3.6-1.7-2.7-1.8-3.1 0-2.8 1.4-2.7-0.5-2 2-0.4-3.4 1.6-3.2 0.8-6-0.4-6.4-0.6-3.2 0.6-3.2-1.4-3-2.8-2.8 1.3-2.1 21.7 0-0.9-9.3 1.5-3.3 5.2-0.5 0.2-16.5 18 0.4 0.2-9.8 20.5 15.6z"
                             id="MR"
@@ -1464,6 +1991,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Malawi");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Malawi")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Malawi"
@@ -1474,31 +2003,63 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Malawi */}
-                          <circle
-                            cx={1175} // approximate x coordinate, adjust as needed
-                            cy={588} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Malawi */}
-                          <text
-                            x={1183} // offset x for label
-                            y={595} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Malawi"
+                            onMouseEnter={() => setHoveredCountry("Malawi")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Malawi
-                          </text>
+                            {/* Red circle marker on Malawi */}
+                            <circle
+                              cx={1175} // approximate x coordinate, adjust as needed
+                              cy={588} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Malawi" ? "flex" : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Malawi");
+                              }}
+                            />
+
+                            {/* Label for Malawi */}
+                            <foreignObject
+                              x={1183} // offset x for label
+                              y={585} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Malawi" ? "flex" : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Malawi");
+                                }}
+                              >
+                                Malawi
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             className="Malaysia"
                             d="M 1564.3 461.9 1565.7 462.5 1569.2 466.4 1571.7 470.7 1572.3 475 1571.8 477.9 1572.4 480.1 1572.9 483.9 1575 485.7 1577.3 491.4 1577.3 493.5 1573.3 494 1567.8 489.2 1561 484.1 1560.2 480.8 1556.8 476.5 1555.8 471.2 1553.6 467.7 1554 463 1552.6 460.3 1553.5 459.2 1558.3 462 1558.9 465.3 1562.6 464.5 1564.3 461.9 Z"
@@ -1515,6 +2076,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Namibia");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Namibia")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Namibia"
@@ -1525,31 +2088,67 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Namibia */}
-                          <circle
-                            cx={1070} // approximate x coordinate, adjust as needed
-                            cy={630} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Namibia */}
-                          <text
-                            x={1075} // offset x for label
-                            y={627} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Namibia"
+                            onMouseEnter={() => setHoveredCountry("Namibia")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Namibia
-                          </text>
+                            {/* Red circle marker on Namibia */}
+                            <circle
+                              cx={1070} // approximate x coordinate, adjust as needed
+                              cy={630} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Namibia"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Namibia");
+                              }}
+                            />
+
+                            {/* Label for Namibia */}
+                            <foreignObject
+                              x={1020} // offset x for label
+                              y={620} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Namibia"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Namibia");
+                                }}
+                              >
+                                Namibia
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M1068.6 355l1.6 10 2.2 1.7 0.1 2 2.4 2.2-1.2 2.8-1.8 13-0.2 8.4-7 6-2.3 8.5 2.4 2.4 0 4.1 3.7 0.1-0.6 3.1-1.5 0.3-0.2 2.1-1 0.1-3.9-7-1.4-0.3-4.3 3.6-4.4-1.9-3-0.3-1.6 0.9-3.3-0.2-3.3 2.7-2.9 0.2-6.8-3.3-2.7 1.5-2.9-0.1-2.1-2.4-5.6-2.4-6.1 0.8-1.4 1.3-0.8 3.7-1.6 2.6-0.4 5.8-4.3-3.7-2 0-1.9 1.9 0.1-4.4-6.5-1.5-0.2-3.1-3.1-4.2-0.8-2.9 0.5-3.1 3.6-0.3 2-2.3 7.7-0.5 5-1 0.4-4 3.1-4.3-0.1-14.8 7.8-2.8 16-12.6 18.8-12.3 8.8 2.8 3.2 3.5 3.8-2.4z"
                             id="NE"
@@ -1693,6 +2292,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Rwanda");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Rwanda")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Rwanda"
@@ -1702,32 +2303,63 @@ function DashboardSection() {
                             />
                           </a>
 
-                          {/* Red circle marker on Rwanda */}
-                          <circle
-                            cx={1154} // approximate x coordinate, adjust as needed
-                            cy={514} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Rwanda */}
-                          <text
-                            x={1093} // offset x for label
-                            y={520} // offset y for label
-                            style={{
-                              fontSize: "7px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "black",
-                            }}
-                            className="country-label"
-                            id="label-Rwanda"
+                            onMouseEnter={() => setHoveredCountry("Rwanda")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Rwanda / Burundi
-                          </text>
+                            {/* Red circle marker on Rwanda */}
+                            <circle
+                              cx={1154} // approximate x coordinate, adjust as needed
+                              cy={514} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Rwanda" ? "flex" : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Rwanda");
+                              }}
+                            />
+
+                            {/* Label for Rwanda */}
+                            <foreignObject
+                              x={1100} // offset x for label
+                              y={510} // offset y for label
+                              width={42}
+                              height={25}
+                              style={{
+                                display:
+                                  hoveredCountry === "Rwanda" ? "flex" : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Rwanda");
+                                }}
+                              >
+                                Rwanda
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M938.9 324.3l-0.1 0.4-0.1 1.2-0.2 9.8-18-0.4-0.2 16.5-5.2 0.5-1.5 3.3 0.9 9.3-21.7 0-1.3 2.1 0.3-2.7 0.1 0 12.5-0.5 0.7-2.3 2.4-2.9 2-8.9 7.9-6.9 2.7-8.1 1.8-0.5 1.9-5 4.6-0.7 2 0.9 2.5 0 1.8-1.5 3.4-0.2-0.1-3.4 0.9 0z"
                             id="EH"
@@ -1753,6 +2385,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("SouthSudan");
                             }}
+                            onMouseEnter={() => setHoveredCountry("SouthSudan")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="SouthSudan"
@@ -1763,31 +2397,67 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on South Sudan */}
-                          <circle
-                            cx={1140} // approximate x coordinate, adjust as needed
-                            cy={453} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for South Sudan */}
-                          <text
-                            x={1150} // offset x for label
-                            y={460} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-South-Sudan"
+                            onMouseEnter={() => setHoveredCountry("SouthSudan")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            South Sudan
-                          </text>
+                            {/* Red circle marker on SouthSudan */}
+                            <circle
+                              cx={1160} // approximate x coordinate, adjust as needed
+                              cy={453} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "SouthSudan"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("SouthSudan");
+                              }}
+                            />
+
+                            {/* Label for South Sudan */}
+                            <foreignObject
+                              x={1165} // offset x for label
+                              y={443} // offset y for label
+                              width={55}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "SouthSudan"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("South Sudan");
+                                }}
+                              >
+                                SouthSudan
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M918 408l0.2 4 1.1 3.7 2 1.8 0.5 2.4-0.3 2-0.8 0.4-3.1-0.5-0.4 0.7-1.2 0.1-4.1-1.5-2.7-0.1-10.4-0.3-1.5 0.8-1.9-0.2-3 1-0.8-4.9 5.1 0.1 1.4-0.9 1 0 2.1-1.5 2.4 1.3 2.4 0.2 2.5-1.5-1.1-1.8-1.9 1-1.7 0-2.2-1.6-1.8 0.1-1.3 1.6-6.1 0.1-2.3-5-2.7-2.2 2.5-1.3 2.8-4.5 1.4-3.3 2-2 2.7 0.5 2.8-1.4 3.1 0 2.7 1.8 3.6 1.7 3.4 4.8 3.6 4.4z"
                             id="SN"
@@ -1838,6 +2508,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Eswatini");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Eswatini")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Eswatini"
@@ -1848,31 +2520,67 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Eswatini */}
-                          <circle
-                            cx={1159} // approximate x coordinate, adjust as needed
-                            cy={674} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Eswatini */}
-                          <text
-                            x={1166} // offset x for label
-                            y={683} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Eswatini"
+                            onMouseEnter={() => setHoveredCountry("Eswatini")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Eswatini
-                          </text>
+                            {/* Red circle marker on Eswatini */}
+                            <circle
+                              cx={1159} // approximate x coordinate, adjust as needed
+                              cy={674} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Eswatini"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Eswatini");
+                              }}
+                            />
+
+                            {/* Label for Eswatini */}
+                            <foreignObject
+                              x={1166} // offset x for label
+                              y={675} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Eswatini"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Eswatini");
+                                }}
+                              >
+                                Eswatini
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M1195 287.5l-9.7 6.9-6.3-2.6-0.1 0 0.6-1-0.4-2.6 0.9-3.5 2.7-2.5-1.2-2.5-2.5-0.3-1.1-4.9 1-2.7 1.3-1.4 1.2-1.4-0.2-3.5 1.9 1.2 5.6-1.8 3 1.2 4.4 0 5.7-2.4 2.9 0.1 5.9-1-2.1 4-2.7 1.6 1.2 4.7-1 7.7-11 6.7z"
                             id="SY"
@@ -1937,6 +2645,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Tanzania");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Tanzania")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Tanzania"
@@ -1947,31 +2657,67 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Tanzania */}
-                          <circle
-                            cx={1186} // approximate x coordinate, adjust as needed
-                            cy={550} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Tanzania */}
-                          <text
-                            x={1193} // offset x for label
-                            y={558} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Tanzania"
+                            onMouseEnter={() => setHoveredCountry("Tanzania")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Tanzania
-                          </text>
+                            {/* Red circle marker on Tanzania */}
+                            <circle
+                              cx={1186} // approximate x coordinate, adjust as needed
+                              cy={550} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Tanzania"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Tanzania");
+                              }}
+                            />
+
+                            {/* Label for Tanzania */}
+                            <foreignObject
+                              x={1193} // offset x for label
+                              y={550} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Tanzania"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Tanzania");
+                                }}
+                              >
+                                Tanzania
+                              </div>
+                            </foreignObject>
+                          </g>
                           {/* Uganda with anchor wrapper */}
                           <a
                             href="#"
@@ -1980,6 +2726,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Uganda");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Uganda")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Uganda"
@@ -1990,31 +2738,63 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Uganda */}
-                          <circle
-                            cx={1162} // approximate x coordinate, adjust as needed
-                            cy={499} // approximate y coordinate, adjust as needed
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Uganda */}
-                          <text
-                            x={1165} // offset x for label
-                            y={495} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Uganda"
+                            onMouseEnter={() => setHoveredCountry("Uganda")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Uganda
-                          </text>
+                            {/* Red circle marker on Uganda */}
+                            <circle
+                              cx={1162} // approximate x coordinate, adjust as needed
+                              cy={499} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Uganda" ? "flex" : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Uganda");
+                              }}
+                            />
+
+                            {/* Label for Uganda */}
+                            <foreignObject
+                              x={1165} // offset x for label
+                              y={485} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Uganda" ? "flex" : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Uganda");
+                                }}
+                              >
+                                Uganda
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M1157.2 174.6l2.3 2.7 0.1 1.2 6.7 2.2 3.6-1 3.6 2.9 2.9-0.1 7.7 2 0.4 1.9-1.3 3.2 1.8 3.5-0.3 2.1-4.8 0.4-2.2 1.8 0.4 2.7-3.9 0.5-3 2.1-4.6 0.3-4 2.4 1 3.9 2.8 1.5 5.1-0.4-0.6 2.3-5.4 1.1-6.3 3.6-3.1-1.3 0.7-2.9-5.9-1.9 0.7-1.2 4.6-2.1-1.7-1.4-8.1-1.6-0.8-2.4-4.5 0.8-1.3 3.5-3.3 4.6-2.4-1.1-2.3 1.1-2.4-1.2 1.2-0.7 0.6-2.1 1.1-2.1-0.6-1.1 1-0.5 0.6 0.9 3 0.2 1.3-0.5-1-0.6 0.2-1-2-1.6-1.1-2.6-2-1 0.1-2.1-2.6-1.7-2-0.3-4-1.9-3.2 0.6-1.1 0.9-2.1 0-1 1.5-3.6 0.6-1.6 1-2.5-1.6-3.2 0-3.2-0.7-2 1.4-0.5-1.7-3-1.7 0.7-2.5 1.2-1.7 1.1 0.4-1.6-2.8 3.8-5.2 2.3-0.7 0.3-1.7-3.2-5.4 2.3-0.3 2.4-1.6 3.8-0.2 4.9 0.5 5.7 1.5 3.9 0.1 1.9 0.9 1.7-1.1 1.5 1.5 4.3-0.3 2.1 0.6-0.3-3.1 1.3-1.4 4.1-0.3 1.8 0.2 1-1.4 1.5 0.3 4.9-0.6 3.8 3.5-0.9 1.3 0.8 1.9 3.9 0.3z"
                             id="UA"
@@ -2053,6 +2833,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Zambia");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Zambia")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Zambia"
@@ -2063,31 +2845,63 @@ function DashboardSection() {
                           </a>
 
                           {/* Red circle marker on Zambia */}
-                          <circle
-                            cx={1122} // approximate x coordinate
-                            cy={595} // approximate y coordinate
-                            r={1.5}
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Zambia */}
-                          <text
-                            x={1132} // offset x for label
-                            y={600} // offset y for label
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Zambia"
+                            onMouseEnter={() => setHoveredCountry("Zambia")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Zambia
-                          </text>
+                            {/* Red circle marker on Zambia */}
+                            <circle
+                              cx={1122} // approximate x coordinate, adjust as needed
+                              cy={595} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Zambia" ? "flex" : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Zambia");
+                              }}
+                            />
+                            {/* Label for Zambia */}
+                            <foreignObject
+                              x={1125} // offset x for label
+                              y={580} // offset y for label
+                              width={45}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Zambia" ? "flex" : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Zambia");
+                                }}
+                              >
+                                Zambia
+                              </div>
+                            </foreignObject>
+                          </g>
+
                           {/* Your existing link and path */}
                           <a
                             href="#"
@@ -2096,6 +2910,8 @@ function DashboardSection() {
                               e.preventDefault();
                               handleCountryClick("Zimbabwe");
                             }}
+                            onMouseEnter={() => setHoveredCountry("Zimbabwe")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
                             <path
                               className="Zimbabwe"
@@ -2106,31 +2922,67 @@ function DashboardSection() {
                           </a>
 
                           {/* Add a red circle marker */}
-                          <circle
-                            cx={1153} // x position, adjust as needed
-                            cy={630} // y position, adjust as needed
-                            r={1.5} // radius of the marker
-                            fill="red"
-                            stroke="white"
-                            strokeWidth={0.5}
+                          <g
                             style={{ cursor: "pointer" }}
-                          />
-
-                          {/* Label for Zimbabwe */}
-                          <text
-                            x={1160}
-                            y={640}
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                              fill: "white",
-                            }}
-                            className="country-label"
-                            id="label-Zimbabwe"
+                            onMouseEnter={() => setHoveredCountry("Zimbabwe")}
+                            onMouseLeave={() => setHoveredCountry(null)}
                           >
-                            Zimbabwe
-                          </text>
+                            {/* Red circle marker on Zimbabwe */}
+                            <circle
+                              cx={1153} // approximate x coordinate, adjust as needed
+                              cy={630} // approximate y coordinate, adjust as needed
+                              r={1.5}
+                              fill="red"
+                              stroke="white"
+                              strokeWidth={0.5}
+                              style={{
+                                cursor: "pointer",
+                                display:
+                                  hoveredCountry === "Zimbabwe"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCountryClick("Zimbabwe");
+                              }}
+                            />
+
+                            {/* Label for Zimbabwe */}
+                            <foreignObject
+                              x={1158} // offset x for label
+                              y={622} // offset y for label
+                              width={55}
+                              height={16}
+                              style={{
+                                display:
+                                  hoveredCountry === "Zimbabwe"
+                                    ? "flex"
+                                    : "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "9px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                  color: "black",
+                                  background: "white",
+                                  borderRadius: "3px",
+                                  padding: "2px 4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCountryClick("Zimbabwe");
+                                }}
+                              >
+                                Zimbabwe
+                              </div>
+                            </foreignObject>
+                          </g>
                           <path
                             d="M1222.1 512.6l-3.3-5.3-0.2-23.4 4.9-7.2 1.5-2.1 3.6-0.1 5-4.5 7.3-0.3 15.6-19.3-4.8 0.1-18.7-7.6-2.2-2.3-2.2-3.1-2.2-3.6 1.2-2.2 1.9-3.5 1.9 1.2 1.2 2.7 2.7 2.7 2.8 0 5.2-1.7 6.1-0.7 4.9-2 2.8-0.4 2-1.2 3.2-0.2 1.8-0.2 2.5-0.9 3-0.7 2.5-2.2 2.2 0 0.2 1.8-0.4 3.7 0.2 3.4-1.1 2.3-1.4 7-2.4 7.1-3.3 8.2-4.6 9.4-4.7 7.2-6.6 8.8-5.6 5.2-8.4 6.4-5.3 4.8-6.2 7.8-1.3 3.4-1.3 1.5z"
                             id="SO"
@@ -3179,8 +4031,47 @@ function DashboardSection() {
                       </div>
                     </div>
                   </TransformComponent>
+                  <div className="map-border-patch"></div>
                   <div className="map-title">
                     <i className="ri-map-pin-line"></i> Interactive Map
+                  </div>
+                  <div className="dash-card-stats">
+                    {/* Show label only if no country is selected */}
+
+                    {/* Show stats if a country is selected */}
+                    <div className="country-dash">
+                      {countryFilter ? (
+                        <>
+                          {countryFlags[selectedCountryName] && (
+                            <img
+                              src={countryFlags[selectedCountryName]}
+                              alt={`${selectedCountryName} flag`}
+                              style={{
+                                width: "25px", // adjust size as needed
+                                marginRight: "10px", // space between name and flag
+                                verticalAlign: "middle",
+                              }}
+                            />
+                          )}
+                          {selectedCountryName}
+                        </>
+                      ) : (
+                        <div className="overall-totals">
+                          Member Countries: <br />
+                          <p>{overallTotal.toLocaleString()}</p>
+                          <span>Overall: ({metricLabels[selectedMetric]})</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="metric-dash">
+                      {metricValue !== null && <p>{metricValue}</p>}
+                    </div>
+                    {countryFilter ? (
+                      <span>({metricLabels[selectedMetric]})</span>
+                    ) : (
+                      " "
+                    )}
                   </div>
                   <div className="controls">
                     <div className="zoom-controls">
@@ -3202,6 +4093,9 @@ function DashboardSection() {
                     <p>
                       Map Key: <i className="ri-key-2-fill"></i>
                     </p>
+                    <div className="key-member-countries">
+                      Member Countries: <span> </span>
+                    </div>
                     <div className="key-africa">
                       Rest of the Africa:{" "}
                       <i className="ri-checkbox-blank-circle-fill"></i>
@@ -3216,19 +4110,18 @@ function DashboardSection() {
             </TransformWrapper>
           </div>
           <div className="bar-chart-container">
+            <div className="grey-bar"></div>
             <h3>
               {" "}
-              Bar Chart Visualisation
-              <span style={{ marginLeft: "10px", fontSize: "14px" }}>
-                (Metric: {metricLabels[selectedMetric]})
-              </span>
+              Chart Visualisation
+              <span>(Metric: {metricLabels[selectedMetric]})</span>
             </h3>
             <Bar
               data={chartData}
               options={{
                 plugins: {
                   legend: {
-                    display: true,
+                    display: false,
                   },
                 },
               }}
@@ -3237,59 +4130,56 @@ function DashboardSection() {
         </div>
         <div className="dash-container-right">
           <div className="pie-chart-container">
+            
             <h3>
               {" "}
-              Pie Chart Visualisation
-              <span style={{ marginLeft: "10px", fontSize: "14px" }}>
-                (Metric: {metricLabels[selectedMetric]})
-              </span>
+              Chart Visualisation
+              <span>(Metric: {metricLabels[selectedMetric]})</span>
             </h3>
             <Doughnut
-  data={chartData}
-  options={{
-    plugins: {
-      legend: {
-        display: true,
-        position: "right",
-        labels: {
-          font: {
-            size: 10, // your font size
-          },
-          color: 'white', // set the label color here
-          padding: 8,
-        },
-      },
-      tooltip: {
-        mode: 'index',
-        enabled: true,
-      },
-    },
-    layout: {
-      padding: {
-        left: 15,
-        right: 5 ,
-        top: 0,
-        bottom: 20,
-      },
-    },
-  }}
-/>
+              data={chartData}
+              options={{
+                plugins: {
+                  legend: {
+                    display: true,
+                    position: "right",
+                    labels: {
+                      font: {
+                        size: 11, // your font size
+                      },
+                      color: "white ", // set the label color here
+                      padding: 8,
+                    },
+                  },
+                  tooltip: {
+                    mode: "index",
+                    enabled: true,
+                  },
+                },
+                layout: {
+                  padding: {
+                    left: 15,
+                    right: 5,
+                    top: 0,
+                    bottom: 20,
+                  },
+                },
+              }}
+            />
           </div>
 
           <div className="line-chart-container">
             <h3>
               {" "}
-              Line Chart Visualisation
-              <span style={{ marginLeft: "10px", fontSize: "14px" }}>
-                (Metric: {metricLabels[selectedMetric]})
-              </span>
+              Chart Visualisation
+              <span>(Metric: {metricLabels[selectedMetric]})</span>
             </h3>
             <Line
               data={chartData}
               options={{
                 plugins: {
                   legend: {
-                    display: true,
+                    display: false,
                   },
                 },
               }}

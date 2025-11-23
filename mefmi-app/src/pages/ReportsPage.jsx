@@ -3,18 +3,18 @@ import React from 'react'
 import ScrollToTop from '../components/ScrollToTop'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import UploadSection from '../components/UploadSection'
 import '../pages/UploadPage.css';
+import ReportsSection from '../components/ReportsSection'
 
-function UploadPage() {
+function ReportsPage() {
   return (
     <div className='upload-page-container'>
       <ScrollToTop/>
       <Navbar/>
-      <UploadSection/>
+      <ReportsSection/>
       <Footer/>
     </div>
   )
 }
 
-export default UploadPage
+export default ReportsPage

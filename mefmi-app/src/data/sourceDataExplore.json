@@ -1,0 +1,1759 @@
+{
+  "countries": [
+    {
+      "name": "Angola",
+      "data": {
+        "2010": {
+          "total_debt": 150.0,
+          "external_debt": 80.0,
+          "domestic_debt": 70.0,
+          "yearly_financing": 10.0,
+          "public_debt": 120.0
+        },
+        "2011": {
+          "total_debt": 160.0,
+          "external_debt": 85.0,
+          "domestic_debt": 75.0,
+          "yearly_financing": 12.0,
+          "public_debt": 125.0
+        },
+        "2012": {
+          "total_debt": 170.0,
+          "external_debt": 90.0,
+          "domestic_debt": 80.0,
+          "yearly_financing": 15.0,
+          "public_debt": 130.0
+        },
+        "2013": {
+          "total_debt": 180.0,
+          "external_debt": 95.0,
+          "domestic_debt": 85.0,
+          "yearly_financing": 10.0,
+          "public_debt": 135.0
+        },
+        "2014": {
+          "total_debt": 190.0,
+          "external_debt": 100.0,
+          "domestic_debt": 90.0,
+          "yearly_financing": 11.0,
+          "public_debt": 140.0
+        },
+        "2015": {
+          "total_debt": 200.0,
+          "external_debt": 110.0,
+          "domestic_debt": 90.0,
+          "yearly_financing": 13.0,
+          "public_debt": 145.0
+        },
+        "2016": {
+          "total_debt": 210.0,
+          "external_debt": 115.0,
+          "domestic_debt": 95.0,
+          "yearly_financing": 14.0,
+          "public_debt": 150.0
+        },
+        "2017": {
+          "total_debt": 220.0,
+          "external_debt": 120.0,
+          "domestic_debt": 100.0,
+          "yearly_financing": 15.0,
+          "public_debt": 155.0
+        },
+        "2018": {
+          "total_debt": 230.0,
+          "external_debt": 125.0,
+          "domestic_debt": 105.0,
+          "yearly_financing": 16.0,
+          "public_debt": 160.0
+        },
+        "2019": {
+          "total_debt": 240.0,
+          "external_debt": 130.0,
+          "domestic_debt": 110.0,
+          "yearly_financing": 17.0,
+          "public_debt": 165.0
+        },
+        "2020": {
+          "total_debt": 250.0,
+          "external_debt": 135.0,
+          "domestic_debt": 115.0,
+          "yearly_financing": 18.0,
+          "public_debt": 170.0
+        },
+        "2021": {
+          "total_debt": 260.0,
+          "external_debt": 140.0,
+          "domestic_debt": 120.0,
+          "yearly_financing": 19.0,
+          "public_debt": 175.0
+        },
+        "2022": {
+          "total_debt": 270.0,
+          "external_debt": 145.0,
+          "domestic_debt": 125.0,
+          "yearly_financing": 20.0,
+          "public_debt": 180.0
+        },
+        "2023": {
+          "total_debt": 280.0,
+          "external_debt": 150.0,
+          "domestic_debt": 130.0,
+          "yearly_financing": 21.0,
+          "public_debt": 185.0
+        },
+        "2024": {
+          "total_debt": 290.0,
+          "external_debt": 155.0,
+          "domestic_debt": 135.0,
+          "yearly_financing": 22.0,
+          "public_debt": 190.0
+        },
+        "2025": {
+          "total_debt": 300.0,
+          "external_debt": 160.0,
+          "domestic_debt": 140.0,
+          "yearly_financing": 23.0,
+          "public_debt": 195.0
+        }
+      }
+    },
+    {
+      "name": "Botswana",
+      "data": {
+        "2010": {
+          "total_debt": 50.0,
+          "external_debt": 20.0,
+          "domestic_debt": 30.0,
+          "yearly_financing": 5.0,
+          "public_debt": 20.0
+        },
+        "2011": {
+          "total_debt": 55.0,
+          "external_debt": 22.0,
+          "domestic_debt": 33.0,
+          "yearly_financing": 5.5,
+          "public_debt": 22.0
+        },
+        "2012": {
+          "total_debt": 60.0,
+          "external_debt": 25.0,
+          "domestic_debt": 35.0,
+          "yearly_financing": 6.0,
+          "public_debt": 24.0
+        },
+        "2013": {
+          "total_debt": 65.0,
+          "external_debt": 27.0,
+          "domestic_debt": 38.0,
+          "yearly_financing": 6.5,
+          "public_debt": 26.0
+        },
+        "2014": {
+          "total_debt": 70.0,
+          "external_debt": 30.0,
+          "domestic_debt": 40.0,
+          "yearly_financing": 7.0,
+          "public_debt": 28.0
+        },
+        "2015": {
+          "total_debt": 75.0,
+          "external_debt": 32.0,
+          "domestic_debt": 43.0,
+          "yearly_financing": 7.5,
+          "public_debt": 30.0
+        },
+        "2016": {
+          "total_debt": 80.0,
+          "external_debt": 35.0,
+          "domestic_debt": 45.0,
+          "yearly_financing": 8.0,
+          "public_debt": 32.0
+        },
+        "2017": {
+          "total_debt": 85.0,
+          "external_debt": 38.0,
+          "domestic_debt": 47.0,
+          "yearly_financing": 8.5,
+          "public_debt": 34.0
+        },
+        "2018": {
+          "total_debt": 90.0,
+          "external_debt": 40.0,
+          "domestic_debt": 50.0,
+          "yearly_financing": 9.0,
+          "public_debt": 36.0
+        },
+        "2019": {
+          "total_debt": 95.0,
+          "external_debt": 43.0,
+          "domestic_debt": 52.0,
+          "yearly_financing": 9.5,
+          "public_debt": 38.0
+        },
+        "2020": {
+          "total_debt": 100.0,
+          "external_debt": 45.0,
+          "domestic_debt": 55.0,
+          "yearly_financing": 10.0,
+          "public_debt": 40.0
+        },
+        "2021": {
+          "total_debt": 105.0,
+          "external_debt": 48.0,
+          "domestic_debt": 57.0,
+          "yearly_financing": 10.5,
+          "public_debt": 42.0
+        },
+        "2022": {
+          "total_debt": 110.0,
+          "external_debt": 50.0,
+          "domestic_debt": 60.0,
+          "yearly_financing": 11.0,
+          "public_debt": 44.0
+        },
+        "2023": {
+          "total_debt": 115.0,
+          "external_debt": 52.0,
+          "domestic_debt": 63.0,
+          "yearly_financing": 11.5,
+          "public_debt": 46.0
+        },
+        "2024": {
+          "total_debt": 120.0,
+          "external_debt": 55.0,
+          "domestic_debt": 65.0,
+          "yearly_financing": 12.0,
+          "public_debt": 48.0
+        },
+        "2025": {
+          "total_debt": 125.0,
+          "external_debt": 58.0,
+          "domestic_debt": 68.0,
+          "yearly_financing": 12.5,
+          "public_debt": 50.0
+        }
+      }
+    },
+    {
+  "name": "Burundi",
+  "data": {
+    "2010": {
+      "total_debt": 50.0,
+      "external_debt": 20.0,
+      "domestic_debt": 30.0,
+      "yearly_financing": 2.0,
+      "public_debt": 40.0
+    },
+    "2011": {
+      "total_debt": 55.0,
+      "external_debt": 22.0,
+      "domestic_debt": 33.0,
+      "yearly_financing": 2.5,
+      "public_debt": 45.0
+    },
+    "2012": {
+      "total_debt": 60.0,
+      "external_debt": 24.0,
+      "domestic_debt": 36.0,
+      "yearly_financing": 3.0,
+      "public_debt": 50.0
+    },
+    "2013": {
+      "total_debt": 65.0,
+      "external_debt": 26.0,
+      "domestic_debt": 39.0,
+      "yearly_financing": 3.2,
+      "public_debt": 55.0
+    },
+    "2014": {
+      "total_debt": 70.0,
+      "external_debt": 28.0,
+      "domestic_debt": 42.0,
+      "yearly_financing": 3.5,
+      "public_debt": 60.0
+    },
+    "2015": {
+      "total_debt": 75.0,
+      "external_debt": 30.0,
+      "domestic_debt": 45.0,
+      "yearly_financing": 3.8,
+      "public_debt": 65.0
+    },
+    "2016": {
+      "total_debt": 80.0,
+      "external_debt": 32.0,
+      "domestic_debt": 48.0,
+      "yearly_financing": 4.0,
+      "public_debt": 70.0
+    },
+    "2017": {
+      "total_debt": 85.0,
+      "external_debt": 34.0,
+      "domestic_debt": 51.0,
+      "yearly_financing": 4.2,
+      "public_debt": 75.0
+    },
+    "2018": {
+      "total_debt": 90.0,
+      "external_debt": 36.0,
+      "domestic_debt": 54.0,
+      "yearly_financing": 4.5,
+      "public_debt": 80.0
+    },
+    "2019": {
+      "total_debt": 95.0,
+      "external_debt": 38.0,
+      "domestic_debt": 57.0,
+      "yearly_financing": 4.8,
+      "public_debt": 85.0
+    },
+    "2020": {
+      "total_debt": 100.0,
+      "external_debt": 40.0,
+      "domestic_debt": 60.0,
+      "yearly_financing": 5.0,
+      "public_debt": 90.0
+    },
+    "2021": {
+      "total_debt": 105.0,
+      "external_debt": 42.0,
+      "domestic_debt": 63.0,
+      "yearly_financing": 5.2,
+      "public_debt": 95.0
+    },
+    "2022": {
+      "total_debt": 110.0,
+      "external_debt": 44.0,
+      "domestic_debt": 66.0,
+      "yearly_financing": 5.5,
+      "public_debt": 100.0
+    },
+    "2023": {
+      "total_debt": 115.0,
+      "external_debt": 46.0,
+      "domestic_debt": 69.0,
+      "yearly_financing": 5.7,
+      "public_debt": 105.0
+    },
+    "2024": {
+      "total_debt": 120.0,
+      "external_debt": 48.0,
+      "domestic_debt": 72.0,
+      "yearly_financing": 6.0,
+      "public_debt": 110.0
+    },
+    "2025": {
+      "total_debt": 125.0,
+      "external_debt": 50.0,
+      "domestic_debt": 75.0,
+      "yearly_financing": 6.2,
+      "public_debt": 115.0
+    }
+  }
+},
+{
+  "name": "Eswatini",
+  "data": {
+    "2010": {
+      "total_debt": 80.0,
+      "external_debt": 40.0,
+      "domestic_debt": 40.0,
+      "yearly_financing": 3.0,
+      "public_debt": 70.0
+    },
+    "2011": {
+      "total_debt": 85.0,
+      "external_debt": 42.0,
+      "domestic_debt": 43.0,
+      "yearly_financing": 3.2,
+      "public_debt": 72.0
+    },
+    "2012": {
+      "total_debt": 90.0,
+      "external_debt": 44.0,
+      "domestic_debt": 46.0,
+      "yearly_financing": 3.4,
+      "public_debt": 75.0
+    },
+    "2013": {
+      "total_debt": 95.0,
+      "external_debt": 46.0,
+      "domestic_debt": 49.0,
+      "yearly_financing": 3.6,
+      "public_debt": 77.0
+    },
+    "2014": {
+      "total_debt": 100.0,
+      "external_debt": 48.0,
+      "domestic_debt": 52.0,
+      "yearly_financing": 3.8,
+      "public_debt": 80.0
+    },
+    "2015": {
+      "total_debt": 105.0,
+      "external_debt": 50.0,
+      "domestic_debt": 55.0,
+      "yearly_financing": 4.0,
+      "public_debt": 82.0
+    },
+    "2016": {
+      "total_debt": 110.0,
+      "external_debt": 52.0,
+      "domestic_debt": 58.0,
+      "yearly_financing": 4.2,
+      "public_debt": 85.0
+    },
+    "2017": {
+      "total_debt": 115.0,
+      "external_debt": 54.0,
+      "domestic_debt": 61.0,
+      "yearly_financing": 4.4,
+      "public_debt": 87.0
+    },
+    "2018": {
+      "total_debt": 120.0,
+      "external_debt": 56.0,
+      "domestic_debt": 64.0,
+      "yearly_financing": 4.6,
+      "public_debt": 90.0
+    },
+    "2019": {
+      "total_debt": 125.0,
+      "external_debt": 58.0,
+      "domestic_debt": 67.0,
+      "yearly_financing": 4.8,
+      "public_debt": 92.0
+    },
+    "2020": {
+      "total_debt": 130.0,
+      "external_debt": 60.0,
+      "domestic_debt": 70.0,
+      "yearly_financing": 5.0,
+      "public_debt": 95.0
+    },
+    "2021": {
+      "total_debt": 135.0,
+      "external_debt": 62.0,
+      "domestic_debt": 73.0,
+      "yearly_financing": 5.2,
+      "public_debt": 97.0
+    },
+    "2022": {
+      "total_debt": 140.0,
+      "external_debt": 64.0,
+      "domestic_debt": 76.0,
+      "yearly_financing": 5.4,
+      "public_debt": 100.0
+    },
+    "2023": {
+      "total_debt": 145.0,
+      "external_debt": 66.0,
+      "domestic_debt": 79.0,
+      "yearly_financing": 5.6,
+      "public_debt": 102.0
+    },
+    "2024": {
+      "total_debt": 150.0,
+      "external_debt": 68.0,
+      "domestic_debt": 82.0,
+      "yearly_financing": 5.8,
+      "public_debt": 105.0
+    },
+    "2025": {
+      "total_debt": 155.0,
+      "external_debt": 70.0,
+      "domestic_debt": 85.0,
+      "yearly_financing": 6.0,
+      "public_debt": 107.0
+    }
+  }
+},
+{
+  "name": "Kenya",
+  "data": {
+    "2010": {
+      "total_debt": 100.0,
+      "external_debt": 60.0,
+      "domestic_debt": 40.0,
+      "yearly_financing": 5.0,
+      "public_debt": 90.0
+    },
+    "2011": {
+      "total_debt": 110.0,
+      "external_debt": 65.0,
+      "domestic_debt": 45.0,
+      "yearly_financing": 5.5,
+      "public_debt": 95.0
+    },
+    "2012": {
+      "total_debt": 120.0,
+      "external_debt": 70.0,
+      "domestic_debt": 50.0,
+      "yearly_financing": 6.0,
+      "public_debt": 100.0
+    },
+    "2013": {
+      "total_debt": 130.0,
+      "external_debt": 75.0,
+      "domestic_debt": 55.0,
+      "yearly_financing": 6.5,
+      "public_debt": 105.0
+    },
+    "2014": {
+      "total_debt": 140.0,
+      "external_debt": 80.0,
+      "domestic_debt": 60.0,
+      "yearly_financing": 7.0,
+      "public_debt": 110.0
+    },
+    "2015": {
+      "total_debt": 150.0,
+      "external_debt": 85.0,
+      "domestic_debt": 65.0,
+      "yearly_financing": 7.5,
+      "public_debt": 115.0
+    },
+    "2016": {
+      "total_debt": 160.0,
+      "external_debt": 90.0,
+      "domestic_debt": 70.0,
+      "yearly_financing": 8.0,
+      "public_debt": 120.0
+    },
+    "2017": {
+      "total_debt": 170.0,
+      "external_debt": 95.0,
+      "domestic_debt": 75.0,
+      "yearly_financing": 8.5,
+      "public_debt": 125.0
+    },
+    "2018": {
+      "total_debt": 180.0,
+      "external_debt": 100.0,
+      "domestic_debt": 80.0,
+      "yearly_financing": 9.0,
+      "public_debt": 130.0
+    },
+    "2019": {
+      "total_debt": 190.0,
+      "external_debt": 105.0,
+      "domestic_debt": 85.0,
+      "yearly_financing": 9.5,
+      "public_debt": 135.0
+    },
+    "2020": {
+      "total_debt": 200.0,
+      "external_debt": 110.0,
+      "domestic_debt": 90.0,
+      "yearly_financing": 10.0,
+      "public_debt": 140.0
+    },
+    "2021": {
+      "total_debt": 210.0,
+      "external_debt": 115.0,
+      "domestic_debt": 95.0,
+      "yearly_financing": 10.5,
+      "public_debt": 145.0
+    },
+    "2022": {
+      "total_debt": 220.0,
+      "external_debt": 120.0,
+      "domestic_debt": 100.0,
+      "yearly_financing": 11.0,
+      "public_debt": 150.0
+    },
+    "2023": {
+      "total_debt": 230.0,
+      "external_debt": 125.0,
+      "domestic_debt": 105.0,
+      "yearly_financing": 11.5,
+      "public_debt": 155.0
+    },
+    "2024": {
+      "total_debt": 240.0,
+      "external_debt": 130.0,
+      "domestic_debt": 110.0,
+      "yearly_financing": 12.0,
+      "public_debt": 160.0
+    },
+    "2025": {
+      "total_debt": 250.0,
+      "external_debt": 135.0,
+      "domestic_debt": 115.0,
+      "yearly_financing": 12.5,
+      "public_debt": 165.0
+    }
+  }
+},
+{
+  "name": "Lesotho",
+  "data": {
+    "2010": {
+      "total_debt": 50.0,
+      "external_debt": 20.0,
+      "domestic_debt": 30.0,
+      "yearly_financing": 2.0,
+      "public_debt": 45.0
+    },
+    "2011": {
+      "total_debt": 52.0,
+      "external_debt": 21.0,
+      "domestic_debt": 31.0,
+      "yearly_financing": 2.1,
+      "public_debt": 46.0
+    },
+    "2012": {
+      "total_debt": 54.0,
+      "external_debt": 22.0,
+      "domestic_debt": 32.0,
+      "yearly_financing": 2.2,
+      "public_debt": 47.0
+    },
+    "2013": {
+      "total_debt": 56.0,
+      "external_debt": 23.0,
+      "domestic_debt": 33.0,
+      "yearly_financing": 2.3,
+      "public_debt": 48.0
+    },
+    "2014": {
+      "total_debt": 58.0,
+      "external_debt": 24.0,
+      "domestic_debt": 34.0,
+      "yearly_financing": 2.4,
+      "public_debt": 49.0
+    },
+    "2015": {
+      "total_debt": 60.0,
+      "external_debt": 25.0,
+      "domestic_debt": 35.0,
+      "yearly_financing": 2.5,
+      "public_debt": 50.0
+    },
+    "2016": {
+      "total_debt": 62.0,
+      "external_debt": 26.0,
+      "domestic_debt": 36.0,
+      "yearly_financing": 2.6,
+      "public_debt": 51.0
+    },
+    "2017": {
+      "total_debt": 64.0,
+      "external_debt": 27.0,
+      "domestic_debt": 37.0,
+      "yearly_financing": 2.7,
+      "public_debt": 52.0
+    },
+    "2018": {
+      "total_debt": 66.0,
+      "external_debt": 28.0,
+      "domestic_debt": 38.0,
+      "yearly_financing": 2.8,
+      "public_debt": 53.0
+    },
+    "2019": {
+      "total_debt": 68.0,
+      "external_debt": 29.0,
+      "domestic_debt": 39.0,
+      "yearly_financing": 2.9,
+      "public_debt": 54.0
+    },
+    "2020": {
+      "total_debt": 70.0,
+      "external_debt": 30.0,
+      "domestic_debt": 40.0,
+      "yearly_financing": 3.0,
+      "public_debt": 55.0
+    },
+    "2021": {
+      "total_debt": 72.0,
+      "external_debt": 31.0,
+      "domestic_debt": 41.0,
+      "yearly_financing": 3.1,
+      "public_debt": 56.0
+    },
+    "2022": {
+      "total_debt": 74.0,
+      "external_debt": 32.0,
+      "domestic_debt": 42.0,
+      "yearly_financing": 3.2,
+      "public_debt": 57.0
+    },
+    "2023": {
+      "total_debt": 76.0,
+      "external_debt": 33.0,
+      "domestic_debt": 43.0,
+      "yearly_financing": 3.3,
+      "public_debt": 58.0
+    },
+    "2024": {
+      "total_debt": 78.0,
+      "external_debt": 34.0,
+      "domestic_debt": 44.0,
+      "yearly_financing": 3.4,
+      "public_debt": 59.0
+    },
+    "2025": {
+      "total_debt": 80.0,
+      "external_debt": 35.0,
+      "domestic_debt": 45.0,
+      "yearly_financing": 3.5,
+      "public_debt": 60.0
+    }
+  }
+},
+{
+  "name": "Malawi",
+  "data": {
+    "2010": {
+      "total_debt": 80.0,
+      "external_debt": 30.0,
+      "domestic_debt": 50.0,
+      "yearly_financing": 3.0,
+      "public_debt": 85.0
+    },
+    "2011": {
+      "total_debt": 83.0,
+      "external_debt": 32.0,
+      "domestic_debt": 51.0,
+      "yearly_financing": 3.2,
+      "public_debt": 88.0
+    },
+    "2012": {
+      "total_debt": 86.0,
+      "external_debt": 34.0,
+      "domestic_debt": 52.0,
+      "yearly_financing": 3.4,
+      "public_debt": 91.0
+    },
+    "2013": {
+      "total_debt": 89.0,
+      "external_debt": 36.0,
+      "domestic_debt": 53.0,
+      "yearly_financing": 3.6,
+      "public_debt": 94.0
+    },
+    "2014": {
+      "total_debt": 92.0,
+      "external_debt": 38.0,
+      "domestic_debt": 54.0,
+      "yearly_financing": 3.8,
+      "public_debt": 97.0
+    },
+    "2015": {
+      "total_debt": 95.0,
+      "external_debt": 40.0,
+      "domestic_debt": 55.0,
+      "yearly_financing": 4.0,
+      "public_debt": 100.0
+    },
+    "2016": {
+      "total_debt": 98.0,
+      "external_debt": 42.0,
+      "domestic_debt": 56.0,
+      "yearly_financing": 4.2,
+      "public_debt": 103.0
+    },
+    "2017": {
+      "total_debt": 101.0,
+      "external_debt": 44.0,
+      "domestic_debt": 57.0,
+      "yearly_financing": 4.4,
+      "public_debt": 106.0
+    },
+    "2018": {
+      "total_debt": 104.0,
+      "external_debt": 46.0,
+      "domestic_debt": 58.0,
+      "yearly_financing": 4.6,
+      "public_debt": 109.0
+    },
+    "2019": {
+      "total_debt": 107.0,
+      "external_debt": 48.0,
+      "domestic_debt": 59.0,
+      "yearly_financing": 4.8,
+      "public_debt": 112.0
+    },
+    "2020": {
+      "total_debt": 110.0,
+      "external_debt": 50.0,
+      "domestic_debt": 60.0,
+      "yearly_financing": 5.0,
+      "public_debt": 115.0
+    },
+    "2021": {
+      "total_debt": 113.0,
+      "external_debt": 52.0,
+      "domestic_debt": 61.0,
+      "yearly_financing": 5.2,
+      "public_debt": 118.0
+    },
+    "2022": {
+      "total_debt": 116.0,
+      "external_debt": 54.0,
+      "domestic_debt": 62.0,
+      "yearly_financing": 5.4,
+      "public_debt": 121.0
+    },
+    "2023": {
+      "total_debt": 119.0,
+      "external_debt": 56.0,
+      "domestic_debt": 63.0,
+      "yearly_financing": 5.6,
+      "public_debt": 124.0
+    },
+    "2024": {
+      "total_debt": 122.0,
+      "external_debt": 58.0,
+      "domestic_debt": 64.0,
+      "yearly_financing": 5.8,
+      "public_debt": 127.0
+    },
+    "2025": {
+      "total_debt": 125.0,
+      "external_debt": 60.0,
+      "domestic_debt": 65.0,
+      "yearly_financing": 6.0,
+      "public_debt": 130.0
+    }
+  }
+},
+{
+  "name": "Mozambique",
+  "data": {
+    "2010": {
+      "total_debt": 60.0,
+      "external_debt": 25.0,
+      "domestic_debt": 35.0,
+      "yearly_financing": 2.5,
+      "public_debt": 65.0
+    },
+    "2011": {
+      "total_debt": 62.0,
+      "external_debt": 26.0,
+      "domestic_debt": 36.0,
+      "yearly_financing": 2.6,
+      "public_debt": 67.0
+    },
+    "2012": {
+      "total_debt": 64.0,
+      "external_debt": 27.0,
+      "domestic_debt": 37.0,
+      "yearly_financing": 2.7,
+      "public_debt": 69.0
+    },
+    "2013": {
+      "total_debt": 66.0,
+      "external_debt": 28.0,
+      "domestic_debt": 38.0,
+      "yearly_financing": 2.8,
+      "public_debt": 71.0
+    },
+    "2014": {
+      "total_debt": 68.0,
+      "external_debt": 29.0,
+      "domestic_debt": 39.0,
+      "yearly_financing": 2.9,
+      "public_debt": 73.0
+    },
+    "2015": {
+      "total_debt": 70.0,
+      "external_debt": 30.0,
+      "domestic_debt": 40.0,
+      "yearly_financing": 3.0,
+      "public_debt": 75.0
+    },
+    "2016": {
+      "total_debt": 72.0,
+      "external_debt": 31.0,
+      "domestic_debt": 41.0,
+      "yearly_financing": 3.1,
+      "public_debt": 77.0
+    },
+    "2017": {
+      "total_debt": 74.0,
+      "external_debt": 32.0,
+      "domestic_debt": 42.0,
+      "yearly_financing": 3.2,
+      "public_debt": 79.0
+    },
+    "2018": {
+      "total_debt": 76.0,
+      "external_debt": 33.0,
+      "domestic_debt": 43.0,
+      "yearly_financing": 3.3,
+      "public_debt": 81.0
+    },
+    "2019": {
+      "total_debt": 78.0,
+      "external_debt": 34.0,
+      "domestic_debt": 44.0,
+      "yearly_financing": 3.4,
+      "public_debt": 83.0
+    },
+    "2020": {
+      "total_debt": 80.0,
+      "external_debt": 35.0,
+      "domestic_debt": 45.0,
+      "yearly_financing": 3.5,
+      "public_debt": 85.0
+    },
+    "2021": {
+      "total_debt": 82.0,
+      "external_debt": 36.0,
+      "domestic_debt": 46.0,
+      "yearly_financing": 3.6,
+      "public_debt": 87.0
+    },
+    "2022": {
+      "total_debt": 84.0,
+      "external_debt": 37.0,
+      "domestic_debt": 47.0,
+      "yearly_financing": 3.7,
+      "public_debt": 89.0
+    },
+    "2023": {
+      "total_debt": 86.0,
+      "external_debt": 38.0,
+      "domestic_debt": 48.0,
+      "yearly_financing": 3.8,
+      "public_debt": 91.0
+    },
+    "2024": {
+      "total_debt": 88.0,
+      "external_debt": 39.0,
+      "domestic_debt": 49.0,
+      "yearly_financing": 3.9,
+      "public_debt": 93.0
+    },
+    "2025": {
+      "total_debt": 90.0,
+      "external_debt": 40.0,
+      "domestic_debt": 50.0,
+      "yearly_financing": 4.0,
+      "public_debt": 95.0
+    }
+  }
+},
+{
+  "name": "Namibia",
+  "data": {
+    "2010": {
+      "total_debt": 45.0,
+      "external_debt": 20.0,
+      "domestic_debt": 25.0,
+      "yearly_financing": 2.0,
+      "public_debt": 48.0
+    },
+    "2011": {
+      "total_debt": 47.0,
+      "external_debt": 21.0,
+      "domestic_debt": 26.0,
+      "yearly_financing": 2.1,
+      "public_debt": 50.0
+    },
+    "2012": {
+      "total_debt": 49.0,
+      "external_debt": 22.0,
+      "domestic_debt": 27.0,
+      "yearly_financing": 2.2,
+      "public_debt": 52.0
+    },
+    "2013": {
+      "total_debt": 51.0,
+      "external_debt": 23.0,
+      "domestic_debt": 28.0,
+      "yearly_financing": 2.3,
+      "public_debt": 54.0
+    },
+    "2014": {
+      "total_debt": 53.0,
+      "external_debt": 24.0,
+      "domestic_debt": 29.0,
+      "yearly_financing": 2.4,
+      "public_debt": 56.0
+    },
+    "2015": {
+      "total_debt": 55.0,
+      "external_debt": 25.0,
+      "domestic_debt": 30.0,
+      "yearly_financing": 2.5,
+      "public_debt": 58.0
+    },
+    "2016": {
+      "total_debt": 57.0,
+      "external_debt": 26.0,
+      "domestic_debt": 31.0,
+      "yearly_financing": 2.6,
+      "public_debt": 60.0
+    },
+    "2017": {
+      "total_debt": 59.0,
+      "external_debt": 27.0,
+      "domestic_debt": 32.0,
+      "yearly_financing": 2.7,
+      "public_debt": 62.0
+    },
+    "2018": {
+      "total_debt": 61.0,
+      "external_debt": 28.0,
+      "domestic_debt": 33.0,
+      "yearly_financing": 2.8,
+      "public_debt": 64.0
+    },
+    "2019": {
+      "total_debt": 63.0,
+      "external_debt": 29.0,
+      "domestic_debt": 34.0,
+      "yearly_financing": 2.9,
+      "public_debt": 66.0
+    },
+    "2020": {
+      "total_debt": 65.0,
+      "external_debt": 30.0,
+      "domestic_debt": 35.0,
+      "yearly_financing": 3.0,
+      "public_debt": 68.0
+    },
+    "2021": {
+      "total_debt": 67.0,
+      "external_debt": 31.0,
+      "domestic_debt": 36.0,
+      "yearly_financing": 3.1,
+      "public_debt": 70.0
+    },
+    "2022": {
+      "total_debt": 69.0,
+      "external_debt": 32.0,
+      "domestic_debt": 37.0,
+      "yearly_financing": 3.2,
+      "public_debt": 72.0
+    },
+    "2023": {
+      "total_debt": 71.0,
+      "external_debt": 33.0,
+      "domestic_debt": 38.0,
+      "yearly_financing": 3.3,
+      "public_debt": 74.0
+    },
+    "2024": {
+      "total_debt": 73.0,
+      "external_debt": 34.0,
+      "domestic_debt": 39.0,
+      "yearly_financing": 3.4,
+      "public_debt": 76.0
+    },
+    "2025": {
+      "total_debt": 75.0,
+      "external_debt": 35.0,
+      "domestic_debt": 40.0,
+      "yearly_financing": 3.5,
+      "public_debt": 78.0
+    }
+  }
+},
+{
+  "name": "Rwanda",
+  "data": {
+    "2010": {
+      "total_debt": 22.0,
+      "external_debt": 10.0,
+      "domestic_debt": 12.0,
+      "yearly_financing": 1.0,
+      "public_debt": 24.0
+    },
+    "2011": {
+      "total_debt": 23.0,
+      "external_debt": 11.0,
+      "domestic_debt": 12.0,
+      "yearly_financing": 1.1,
+      "public_debt": 25.0
+    },
+    "2012": {
+      "total_debt": 24.0,
+      "external_debt": 11.5,
+      "domestic_debt": 12.5,
+      "yearly_financing": 1.2,
+      "public_debt": 26.0
+    },
+    "2013": {
+      "total_debt": 25.0,
+      "external_debt": 12.0,
+      "domestic_debt": 13.0,
+      "yearly_financing": 1.3,
+      "public_debt": 27.0
+    },
+    "2014": {
+      "total_debt": 26.0,
+      "external_debt": 12.5,
+      "domestic_debt": 13.5,
+      "yearly_financing": 1.4,
+      "public_debt": 28.0
+    },
+    "2015": {
+      "total_debt": 27.0,
+      "external_debt": 13.0,
+      "domestic_debt": 14.0,
+      "yearly_financing": 1.5,
+      "public_debt": 29.0
+    },
+    "2016": {
+      "total_debt": 28.0,
+      "external_debt": 13.5,
+      "domestic_debt": 14.5,
+      "yearly_financing": 1.6,
+      "public_debt": 30.0
+    },
+    "2017": {
+      "total_debt": 29.0,
+      "external_debt": 14.0,
+      "domestic_debt": 15.0,
+      "yearly_financing": 1.7,
+      "public_debt": 31.0
+    },
+    "2018": {
+      "total_debt": 30.0,
+      "external_debt": 14.5,
+      "domestic_debt": 15.5,
+      "yearly_financing": 1.8,
+      "public_debt": 32.0
+    },
+    "2019": {
+      "total_debt": 31.0,
+      "external_debt": 15.0,
+      "domestic_debt": 16.0,
+      "yearly_financing": 1.9,
+      "public_debt": 33.0
+    },
+    "2020": {
+      "total_debt": 32.0,
+      "external_debt": 15.5,
+      "domestic_debt": 16.5,
+      "yearly_financing": 2.0,
+      "public_debt": 34.0
+    },
+    "2021": {
+      "total_debt": 33.0,
+      "external_debt": 16.0,
+      "domestic_debt": 17.0,
+      "yearly_financing": 2.1,
+      "public_debt": 35.0
+    },
+    "2022": {
+      "total_debt": 34.0,
+      "external_debt": 16.5,
+      "domestic_debt": 17.5,
+      "yearly_financing": 2.2,
+      "public_debt": 36.0
+    },
+    "2023": {
+      "total_debt": 35.0,
+      "external_debt": 17.0,
+      "domestic_debt": 18.0,
+      "yearly_financing": 2.3,
+      "public_debt": 37.0
+    },
+    "2024": {
+      "total_debt": 36.0,
+      "external_debt": 17.5,
+      "domestic_debt": 18.5,
+      "yearly_financing": 2.4,
+      "public_debt": 38.0
+    },
+    "2025": {
+      "total_debt": 37.0,
+      "external_debt": 18.0,
+      "domestic_debt": 19.0,
+      "yearly_financing": 2.5,
+      "public_debt": 39.0
+    }
+  }
+},
+{
+  "name": "SouthSudan",
+  "data": {
+    "2010": {
+      "total_debt": 12.3,
+      "external_debt": 6.7,
+      "domestic_debt": 5.6,
+      "yearly_financing": 0.3,
+      "public_debt": 13.1
+    },
+    "2011": {
+      "total_debt": 13.2,
+      "external_debt": 7.1,
+      "domestic_debt": 6.1,
+      "yearly_financing": 0.35,
+      "public_debt": 14.0
+    },
+    "2012": {
+      "total_debt": 14.0,
+      "external_debt": 7.8,
+      "domestic_debt": 6.2,
+      "yearly_financing": 0.4,
+      "public_debt": 14.8
+    },
+    "2013": {
+      "total_debt": 14.8,
+      "external_debt": 8.2,
+      "domestic_debt": 6.6,
+      "yearly_financing": 0.45,
+      "public_debt": 15.7
+    },
+    "2014": {
+      "total_debt": 15.6,
+      "external_debt": 8.6,
+      "domestic_debt": 7.0,
+      "yearly_financing": 0.5,
+      "public_debt": 16.5
+    },
+    "2015": {
+      "total_debt": 16.4,
+      "external_debt": 9.0,
+      "domestic_debt": 7.4,
+      "yearly_financing": 0.55,
+      "public_debt": 17.4
+    },
+    "2016": {
+      "total_debt": 17.2,
+      "external_debt": 9.4,
+      "domestic_debt": 7.8,
+      "yearly_financing": 0.6,
+      "public_debt": 18.3
+    },
+    "2017": {
+      "total_debt": 18.0,
+      "external_debt": 9.8,
+      "domestic_debt": 8.2,
+      "yearly_financing": 0.65,
+      "public_debt": 19.2
+    },
+    "2018": {
+      "total_debt": 18.8,
+      "external_debt": 10.2,
+      "domestic_debt": 8.6,
+      "yearly_financing": 0.7,
+      "public_debt": 20.1
+    },
+    "2019": {
+      "total_debt": 19.6,
+      "external_debt": 10.6,
+      "domestic_debt": 9.0,
+      "yearly_financing": 0.75,
+      "public_debt": 21.0
+    },
+    "2020": {
+      "total_debt": 20.4,
+      "external_debt": 11.0,
+      "domestic_debt": 9.4,
+      "yearly_financing": 0.8,
+      "public_debt": 21.9
+    },
+    "2021": {
+      "total_debt": 21.2,
+      "external_debt": 11.4,
+      "domestic_debt": 9.8,
+      "yearly_financing": 0.85,
+      "public_debt": 22.8
+    },
+    "2022": {
+      "total_debt": 22.0,
+      "external_debt": 11.8,
+      "domestic_debt": 10.2,
+      "yearly_financing": 0.9,
+      "public_debt": 23.7
+    },
+    "2023": {
+      "total_debt": 22.8,
+      "external_debt": 12.2,
+      "domestic_debt": 10.6,
+      "yearly_financing": 0.95,
+      "public_debt": 24.6
+    },
+    "2024": {
+      "total_debt": 23.6,
+      "external_debt": 12.6,
+      "domestic_debt": 11.0,
+      "yearly_financing": 1.0,
+      "public_debt": 25.5
+    },
+    "2025": {
+      "total_debt": 24.4,
+      "external_debt": 13.0,
+      "domestic_debt": 11.4,
+      "yearly_financing": 1.05,
+      "public_debt": 26.4
+    }
+  }
+},
+{
+  "name": "Tanzania",
+  "data": {
+    "2010": {
+      "total_debt": 8.5,
+      "external_debt": 4.2,
+      "domestic_debt": 4.3,
+      "yearly_financing": 0.25,
+      "public_debt": 9.0
+    },
+    "2011": {
+      "total_debt": 9.1,
+      "external_debt": 4.6,
+      "domestic_debt": 4.5,
+      "yearly_financing": 0.3,
+      "public_debt": 9.6
+    },
+    "2012": {
+      "total_debt": 9.8,
+      "external_debt": 5.0,
+      "domestic_debt": 4.8,
+      "yearly_financing": 0.35,
+      "public_debt": 10.2
+    },
+    "2013": {
+      "total_debt": 10.4,
+      "external_debt": 5.3,
+      "domestic_debt": 5.1,
+      "yearly_financing": 0.4,
+      "public_debt": 10.8
+    },
+    "2014": {
+      "total_debt": 11.0,
+      "external_debt": 5.7,
+      "domestic_debt": 5.3,
+      "yearly_financing": 0.45,
+      "public_debt": 11.4
+    },
+    "2015": {
+      "total_debt": 11.6,
+      "external_debt": 6.0,
+      "domestic_debt": 5.6,
+      "yearly_financing": 0.5,
+      "public_debt": 12.0
+    },
+    "2016": {
+      "total_debt": 12.2,
+      "external_debt": 6.3,
+      "domestic_debt": 5.9,
+      "yearly_financing": 0.55,
+      "public_debt": 12.6
+    },
+    "2017": {
+      "total_debt": 12.8,
+      "external_debt": 6.7,
+      "domestic_debt": 6.1,
+      "yearly_financing": 0.6,
+      "public_debt": 13.2
+    },
+    "2018": {
+      "total_debt": 13.4,
+      "external_debt": 7.0,
+      "domestic_debt": 6.4,
+      "yearly_financing": 0.65,
+      "public_debt": 13.8
+    },
+    "2019": {
+      "total_debt": 14.0,
+      "external_debt": 7.4,
+      "domestic_debt": 6.6,
+      "yearly_financing": 0.7,
+      "public_debt": 14.4
+    },
+    "2020": {
+      "total_debt": 14.6,
+      "external_debt": 7.8,
+      "domestic_debt": 6.8,
+      "yearly_financing": 0.75,
+      "public_debt": 15.0
+    },
+    "2021": {
+      "total_debt": 15.2,
+      "external_debt": 8.2,
+      "domestic_debt": 7.0,
+      "yearly_financing": 0.8,
+      "public_debt": 15.6
+    },
+    "2022": {
+      "total_debt": 15.8,
+      "external_debt": 8.6,
+      "domestic_debt": 7.2,
+      "yearly_financing": 0.85,
+      "public_debt": 16.2
+    },
+    "2023": {
+      "total_debt": 16.4,
+      "external_debt": 9.0,
+      "domestic_debt": 7.4,
+      "yearly_financing": 0.9,
+      "public_debt": 16.8
+    },
+    "2024": {
+      "total_debt": 17.0,
+      "external_debt": 9.4,
+      "domestic_debt": 7.6,
+      "yearly_financing": 0.95,
+      "public_debt": 17.4
+    },
+    "2025": {
+      "total_debt": 17.6,
+      "external_debt": 9.8,
+      "domestic_debt": 7.8,
+      "yearly_financing": 1.0,
+      "public_debt": 18.0
+    }
+  }
+},
+{
+  "name": "Uganda",
+  "data": {
+    "2010": {
+      "total_debt": 6.2,
+      "external_debt": 3.1,
+      "domestic_debt": 3.1,
+      "yearly_financing": 0.2,
+      "public_debt": 6.5
+    },
+    "2011": {
+      "total_debt": 6.7,
+      "external_debt": 3.4,
+      "domestic_debt": 3.3,
+      "yearly_financing": 0.25,
+      "public_debt": 7.0
+    },
+    "2012": {
+      "total_debt": 7.2,
+      "external_debt": 3.7,
+      "domestic_debt": 3.5,
+      "yearly_financing": 0.3,
+      "public_debt": 7.5
+    },
+    "2013": {
+      "total_debt": 7.8,
+      "external_debt": 4.0,
+      "domestic_debt": 3.8,
+      "yearly_financing": 0.35,
+      "public_debt": 8.0
+    },
+    "2014": {
+      "total_debt": 8.4,
+      "external_debt": 4.3,
+      "domestic_debt": 4.1,
+      "yearly_financing": 0.4,
+      "public_debt": 8.6
+    },
+    "2015": {
+      "total_debt": 9.0,
+      "external_debt": 4.6,
+      "domestic_debt": 4.4,
+      "yearly_financing": 0.45,
+      "public_debt": 9.2
+    },
+    "2016": {
+      "total_debt": 9.6,
+      "external_debt": 4.9,
+      "domestic_debt": 4.7,
+      "yearly_financing": 0.5,
+      "public_debt": 9.8
+    },
+    "2017": {
+      "total_debt": 10.2,
+      "external_debt": 5.2,
+      "domestic_debt": 5.0,
+      "yearly_financing": 0.55,
+      "public_debt": 10.4
+    },
+    "2018": {
+      "total_debt": 10.8,
+      "external_debt": 5.5,
+      "domestic_debt": 5.3,
+      "yearly_financing": 0.6,
+      "public_debt": 11.0
+    },
+    "2019": {
+      "total_debt": 11.4,
+      "external_debt": 5.8,
+      "domestic_debt": 5.6,
+      "yearly_financing": 0.65,
+      "public_debt": 11.6
+    },
+    "2020": {
+      "total_debt": 12.0,
+      "external_debt": 6.1,
+      "domestic_debt": 5.9,
+      "yearly_financing": 0.7,
+      "public_debt": 12.2
+    },
+    "2021": {
+      "total_debt": 12.6,
+      "external_debt": 6.4,
+      "domestic_debt": 6.2,
+      "yearly_financing": 0.75,
+      "public_debt": 12.8
+    },
+    "2022": {
+      "total_debt": 13.2,
+      "external_debt": 6.7,
+      "domestic_debt": 6.5,
+      "yearly_financing": 0.8,
+      "public_debt": 13.4
+    },
+    "2023": {
+      "total_debt": 13.8,
+      "external_debt": 7.0,
+      "domestic_debt": 6.8,
+      "yearly_financing": 0.85,
+      "public_debt": 14.0
+    },
+    "2024": {
+      "total_debt": 14.4,
+      "external_debt": 7.3,
+      "domestic_debt": 7.1,
+      "yearly_financing": 0.9,
+      "public_debt": 14.6
+    },
+    "2025": {
+      "total_debt": 15.0,
+      "external_debt": 7.6,
+      "domestic_debt": 7.4,
+      "yearly_financing": 0.95,
+      "public_debt": 15.2
+    }
+  }
+},
+{
+  "name": "Zambia",
+  "data": {
+    "2010": {
+      "total_debt": 7.0,
+      "external_debt": 3.5,
+      "domestic_debt": 3.5,
+      "yearly_financing": 0.22,
+      "public_debt": 7.3
+    },
+    "2011": {
+      "total_debt": 7.4,
+      "external_debt": 3.8,
+      "domestic_debt": 3.6,
+      "yearly_financing": 0.24,
+      "public_debt": 7.7
+    },
+    "2012": {
+      "total_debt": 7.9,
+      "external_debt": 4.1,
+      "domestic_debt": 3.8,
+      "yearly_financing": 0.26,
+      "public_debt": 8.2
+    },
+    "2013": {
+      "total_debt": 8.3,
+      "external_debt": 4.3,
+      "domestic_debt": 4.0,
+      "yearly_financing": 0.28,
+      "public_debt": 8.6
+    },
+    "2014": {
+      "total_debt": 8.8,
+      "external_debt": 4.6,
+      "domestic_debt": 4.2,
+      "yearly_financing": 0.3,
+      "public_debt": 9.0
+    },
+    "2015": {
+      "total_debt": 9.2,
+      "external_debt": 4.8,
+      "domestic_debt": 4.4,
+      "yearly_financing": 0.32,
+      "public_debt": 9.4
+    },
+    "2016": {
+      "total_debt": 9.7,
+      "external_debt": 5.0,
+      "domestic_debt": 4.7,
+      "yearly_financing": 0.34,
+      "public_debt": 9.8
+    },
+    "2017": {
+      "total_debt": 10.1,
+      "external_debt": 5.3,
+      "domestic_debt": 4.8,
+      "yearly_financing": 0.36,
+      "public_debt": 10.2
+    },
+    "2018": {
+      "total_debt": 10.5,
+      "external_debt": 5.5,
+      "domestic_debt": 4.9,
+      "yearly_financing": 0.38,
+      "public_debt": 10.6
+    },
+    "2019": {
+      "total_debt": 11.0,
+      "external_debt": 5.8,
+      "domestic_debt": 5.2,
+      "yearly_financing": 0.4,
+      "public_debt": 11.0
+    },
+    "2020": {
+      "total_debt": 11.4,
+      "external_debt": 6.0,
+      "domestic_debt": 5.4,
+      "yearly_financing": 0.42,
+      "public_debt": 11.4
+    },
+    "2021": {
+      "total_debt": 11.9,
+      "external_debt": 6.2,
+      "domestic_debt": 5.7,
+      "yearly_financing": 0.44,
+      "public_debt": 11.8
+    },
+    "2022": {
+      "total_debt": 12.3,
+      "external_debt": 6.4,
+      "domestic_debt": 5.9,
+      "yearly_financing": 0.46,
+      "public_debt": 12.2
+    },
+    "2023": {
+      "total_debt": 12.8,
+      "external_debt": 6.6,
+      "domestic_debt": 6.2,
+      "yearly_financing": 0.48,
+      "public_debt": 12.7
+    },
+    "2024": {
+      "total_debt": 13.2,
+      "external_debt": 6.8,
+      "domestic_debt": 6.4,
+      "yearly_financing": 0.5,
+      "public_debt": 13.2
+    },
+    "2025": {
+      "total_debt": 13.7,
+      "external_debt": 7.0,
+      "domestic_debt": 6.7,
+      "yearly_financing": 0.52,
+      "public_debt": 13.7
+    }
+  }
+},
+{
+  "name": "Zimbabwe",
+  "data": {
+    "2010": {
+      "total_debt": 4.2,
+      "external_debt": 2.1,
+      "domestic_debt": 2.1,
+      "yearly_financing": 0.12,
+      "public_debt": 4.5
+    },
+    "2011": {
+      "total_debt": 4.7,
+      "external_debt": 2.3,
+      "domestic_debt": 2.4,
+      "yearly_financing": 0.14,
+      "public_debt": 5.0
+    },
+    "2012": {
+      "total_debt": 5.3,
+      "external_debt": 2.5,
+      "domestic_debt": 2.8,
+      "yearly_financing": 0.16,
+      "public_debt": 5.5
+    },
+    "2013": {
+      "total_debt": 6.0,
+      "external_debt": 2.8,
+      "domestic_debt": 3.2,
+      "yearly_financing": 0.18,
+      "public_debt": 6.3
+    },
+    "2014": {
+      "total_debt": 6.8,
+      "external_debt": 3.1,
+      "domestic_debt": 3.7,
+      "yearly_financing": 0.2,
+      "public_debt": 7.1
+    },
+    "2015": {
+      "total_debt": 7.5,
+      "external_debt": 3.4,
+      "domestic_debt": 4.1,
+      "yearly_financing": 0.22,
+      "public_debt": 7.8
+    },
+    "2016": {
+      "total_debt": 8.2,
+      "external_debt": 3.7,
+      "domestic_debt": 4.5,
+      "yearly_financing": 0.24,
+      "public_debt": 8.7
+    },
+    "2017": {
+      "total_debt": 8.9,
+      "external_debt": 4.0,
+      "domestic_debt": 4.9,
+      "yearly_financing": 0.26,
+      "public_debt": 9.4
+    },
+    "2018": {
+      "total_debt": 9.7,
+      "external_debt": 4.3,
+      "domestic_debt": 5.4,
+      "yearly_financing": 0.28,
+      "public_debt": 10.2
+    },
+    "2019": {
+      "total_debt": 10.5,
+      "external_debt": 4.6,
+      "domestic_debt": 5.9,
+      "yearly_financing": 0.3,
+      "public_debt": 11.0
+    },
+    "2020": {
+      "total_debt": 11.3,
+      "external_debt": 4.9,
+      "domestic_debt": 6.4,
+      "yearly_financing": 0.32,
+      "public_debt": 11.8
+    },
+    "2021": {
+      "total_debt": 12.0,
+      "external_debt": 5.2,
+      "domestic_debt": 6.8,
+      "yearly_financing": 0.34,
+      "public_debt": 12.5
+    },
+    "2022": {
+      "total_debt": 12.7,
+      "external_debt": 5.5,
+      "domestic_debt": 7.2,
+      "yearly_financing": 0.36,
+      "public_debt": 13.2
+    },
+    "2023": {
+      "total_debt": 13.4,
+      "external_debt": 5.8,
+      "domestic_debt": 7.6,
+      "yearly_financing": 0.38,
+      "public_debt": 14.0
+    },
+    "2024": {
+      "total_debt": 14.1,
+      "external_debt": 6.1,
+      "domestic_debt": 8.0,
+      "yearly_financing": 0.4,
+      "public_debt": 14.7
+    },
+    "2025": {
+      "total_debt": 14.8,
+      "external_debt": 6.4,
+      "domestic_debt": 8.4,
+      "yearly_financing": 0.42,
+      "public_debt": 15.4
+    }
+  }
+}
+  ]
+}

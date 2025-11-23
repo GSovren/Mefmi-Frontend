@@ -28,7 +28,7 @@ function Footer() {
             <div className="inner-content">
               {/* Original content */}
               <span>
-                Memfmi Member countries:&nbsp;&nbsp;
+                MEFMI Member countries:&nbsp;&nbsp;
                 <>
                   Angola&nbsp;
                   <img src={angolaFlag} alt="" />
@@ -106,7 +106,7 @@ function Footer() {
               </span>
 
               <span>
-                Memfmi Member countries:&nbsp;&nbsp;
+                MEFMI Member countries:&nbsp;&nbsp;
                 <>
                   Angola&nbsp;
                   <img src={angolaFlag} alt="" />

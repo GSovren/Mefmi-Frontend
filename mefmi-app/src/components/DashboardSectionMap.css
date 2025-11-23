@@ -9,6 +9,8 @@
 
 .world-map{
     position: relative;
+    object-fit: cover;
+    object-position: center;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,11 +21,20 @@
 }
 .world-map svg{
     scale: 1.8;
-    transform: translate(-30px, -15px);
+    transform: translate(-30px, -12px);
     cursor: grab;
     position: relative;
     width: 100%;
-    height: auto;
+    /* height: auto; */
+    padding-bottom: 10px;
+}
+.rankings-world-map svg{
+    scale: 2.5;
+    transform: translate(-30px, -12px);
+    cursor: grab;
+    position: relative;
+    width: 100%;
+    /* height: auto; */
     padding-bottom: 10px;
 }
 path{
@@ -32,8 +43,6 @@ path{
 path:hover{
     fill: rgb(180, 214, 221);
 }
-
-
 
 .angola-label{
     position: absolute;
@@ -142,6 +151,22 @@ path:hover{
 
 @media screen  and (max-width: 1024px){
     .world-map svg{
+        scale: 1.4;
+        transform: translate(-15px, -15px);
+        width: 100%;
+    }
+}
+@media screen  and (max-width: 824px){
+    .world-map svg{
+        scale: 1.8;
+        transform: translate(-15px, -15px);
+        width: 100%;
+    }
+}
+@media screen  and (max-width: 560px){
+    .world-map svg{
+        scale: 2.8;
+        transform: translate(-15px, -5px);
         width: 100%;
     }
 }

@@ -66,7 +66,7 @@
     text-decoration: none;
 }
 .navbar-logo h2{
-    padding-left: 20px;
+    padding-left: 18px;
     font-style: italic;
     font-weight: 600;
     font-size: 13px;
@@ -75,6 +75,15 @@
 .navbar-logo img{
     width: 200px;
     padding: 0px 0px 5px 0px;
+}
+.afdb-logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.afdb-logo img{
+    width: 100px;
+    padding-left: 20px;
 }
 .nav-menu-container{
     display: flex;
@@ -86,23 +95,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-weight: 500;
     font-size: 12px;
     font-weight: 600;
     color: black;
     padding: 5px 6px;
     margin: 0px 10px;
     text-decoration: none;
-    transition: .2s;
     border-radius: 5px;
     transition: .3s ease-in-out;
+    gap: 5px;
+
 }
 .nav-links.active{
     color: var(--white);
     transition: .3s ease-in-out;
+        background-color: rgb(179, 178, 178);
+
 }
 .nav-links i{
-    font-size: 16px;
+    font-size: 16p x;
     padding: 0px 3px 4.5px 0px;
 }
 .nav-links::before{
@@ -110,16 +121,17 @@
     position: absolute;
     z-index: -1;
     font-weight: 500;
-    height: 95%;
-    background-color: var(--app--green);
+    background-color: rgb(179, 178, 178);
     transition: .3s ease-in-out;
     bottom: 0px;
-    width: 0px;
+    width: 100px;
+    height: 5px;
 }
 .nav-links:hover::before,
 .nav-links.active::before{
     font-weight: 600;
     width: 100px;
+    height: 60px;
     transition: .3s ease-in-out;
 }
 .nav-links:hover{
@@ -127,18 +139,76 @@
     transition: .3s ease-in-out;
 }
 .more-btn{
+    position: relative;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px 10px;
+    padding: 8px 5px;
     margin: 0px 0px 0px 10px;
     background-color: #a0eba8;
     border-radius: 5px;
+    font-size: 12px;
+    transition: .2s ease-in;
+}
+.more-btn:hover{
+    background-color: var(--app--green);
+    color: var(--white);
+    transition: .2s ease-in;
 }
 .more-btn i{
     font-size: 16px;
+    color: var(--white);
+    transition: .2s ease-in;
 }
+
+.more-btn i:hover{
+    color: var(--white);
+    transition: .2s ease-in;
+}
+.more-links{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--white);
+    top: 50px;
+    padding: 10px 2px;
+    gap: 10px;
+    border: 1px solid var(--app--green);
+}
+.nav-links-more{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: black;
+    padding: 5px 6px;
+    margin: 0px 10px;
+    color: var(--app--green);
+    border-bottom: 0.2px solid var(--app-dark--green);
+    text-decoration: none;
+}
+.nav-links-more:hover{
+    background-color: var(--white);
+    color: var(--app--red);
+}
+.social-links{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 10px;
+}
+.social-links i{
+    color: var(--black);
+    font-size: 30px;
+
+}
+
+
 .sign-up-btn{
     text-decoration: none;
     cursor: pointer;
@@ -184,7 +254,7 @@
 }
 .menu-icon{
     display: none;
-    font-size: 28px;
+    font-size: 32px;
     cursor: pointer;
     margin-left: 10px;
 }
@@ -200,10 +270,11 @@
         font-size: 16px;
     }
 }
-@media screen  and (max-width: 1155px){
+@media screen  and (max-width: 1276px){
     .navbar-logo h2{
         display: none;
     }
+    
     .contact-info-container{
         font-size: 10px;
         gap: 20px;
@@ -222,7 +293,7 @@
         width: 100%;
         background-color: var(--white);
         padding: 3px 0px;
-        top: 10vh;
+        top: 68px;
         left: -100%;
         height: 100vh;
         transition: ease-in-out .3s;
@@ -232,17 +303,36 @@
         transition: ease-in-out .3s;
     }
     .nav-links{
-        padding: 10px 0px;
+        width: 100%;
+        padding: 15px 5px;
+        font-size: 16px;
+    }
+    .more-btn{
+        margin: 0px 0px 0px 0px;
+    }
+    .more-links{
+        padding: 10px 30px;
+    }
+    .nav-links-more{
         font-size: 14px;
     }
     .sign-up-btn{
-        font-size: 15px;
-        width: 150px;
+        font-size: 18px;
+        width: 210px;
         margin-top: 5px;
         padding: 8px 0px;
         border-radius: 5px;
         border-width: 1px;
         margin-left: 0px;
+        margin: 15px 0px;
+    }
+    .sign-up-btn i{
+        font-size: 24px;
+    }
+    .sign-out-btn{
+        font-size: 18px;
+        width: 210px;
+        padding: 8px 0px;
     }
     @media screen  and (max-width: 600px){
     .mefmi-address{

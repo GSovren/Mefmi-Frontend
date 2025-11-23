@@ -11,6 +11,8 @@ import UploadPage from "./pages/UploadPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
+import ApprovalsPage from "./pages/ApprovalsPage.jsx";
+import ReportsPage from "./pages/ReportsPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -39,10 +41,22 @@ const router = createBrowserRouter([
     element: <ComparePage />,
   },
   {
+    path: "/reports",
+    element: <ReportsPage/>,
+  },
+  {
     path: "/upload",
     element: (
       <PrivateRoute>
         <UploadPage />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/approvals",
+    element: (
+      <PrivateRoute>
+        <ApprovalsPage/>
       </PrivateRoute>
     ),
   },

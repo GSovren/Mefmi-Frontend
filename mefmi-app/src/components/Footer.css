@@ -78,3 +78,17 @@
     justify-content: center;
     align-items: center;
 }
+
+
+@media screen  and (max-width: 1024px){
+   .footer-inner-container{
+    font-size: 6px;
+   }
+   .inner-content span img{
+    width: 10px;
+    height: 5px;
+  }
+  .footer-inner-container i{
+    font-size: 10px;
+  }
+}

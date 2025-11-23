@@ -8,30 +8,100 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase-config";
+import firebase from "firebase/compat/app";
+
+async function registerWithEmailPassword(email, password, userData) {
+  try {
+    // 1. Create Firebase user
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const firebaseUser = userCredential.user;
+
+    // 2. Get Firebase ID token
+    const idToken = await firebaseUser.getIdToken();
+
+    // 3. Extract Firebase UID
+    const firebaseUid = firebaseUser.uid;
+
+    // 4. Register user in your backend, passing firebaseUid
+    await fetch("http://192.168.100.87:8080/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: email,
+        firebaseUid: firebaseUid, // pass Firebase UID here
+        role: userData.role,
+        countryCode: userData.countryCode,
+      }),
+    });
+
+    // Return both success and firebaseUid
+    return { success: true, firebaseUid, user: firebaseUser };
+  } catch (error) {
+    console.error("Registration failed:", error);
+    throw error;
+  }
+}
 
 function RegisterPage() {
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
-  const navigate = useNavigate(); // Initialize navigate
+  //   const [registerEmail, setRegisterEmail] = useState("");
+  //   const [registerPassword, setRegisterPassword] = useState("");
+  //   const navigate = useNavigate(); // Initialize navigate
 
-  const register = async () => {
+  //   const register = async () => {
+  //     try {
+  //       const user = await createUserWithEmailAndPassword(
+  //         auth,
+  //         registerEmail,
+  //         registerPassword
+  //       );
+  //       console.log(user);
+  //     } catch (error) {
+  //       console.log(error.message);
+  //     }
+  //   };
+
+  const closeLogin = () => {
+    navigate("/");
+  };
+
+  const navigate = useNavigate();
+
+  // State for form inputs
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  // You can add role and countryCode as needed
+
+  const handleRegister = async () => {
     try {
-      const user = await createUserWithEmailAndPassword(
-        auth,
-        registerEmail,
-        registerPassword
-      );
-      console.log(user);
+      const result = await registerWithEmailPassword(email, password, {
+        firstName,
+        lastName,
+        role: null,
+        countryCode: null,
+      });
+      const { firebaseUid } = result; // Extract firebaseUid here
+
+      // You can now use firebaseUid if needed
+      // For example, send it again to your backend if necessary, or just proceed
+
+      // Navigate or show success message
+      navigate("/");
     } catch (error) {
-      console.log(error.message);
+      alert("Registration error: " + error.message);
     }
   };
 
-  const closeLogin = () => {
-    navigate('/')
-  }
-
-  
   return (
     <div className="login-page-container">
       <div className="login-form-container">
@@ -42,29 +112,41 @@ function RegisterPage() {
           <h1>Sign Up</h1>
 
           <div className="input-container">
+            <label htmlFor="">First Name:</label>
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+          <div className="input-container">
+            <label htmlFor="">Last Name:</label>
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+          <div className="input-container">
             <label htmlFor="">Email Address:</label>
             <input
               type="text"
-              onChange={(event) => {
-                setRegisterEmail(event.target.value);
-              }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="input-container">
             <label htmlFor="">Password:</label>
             <input
               type="text"
-              onChange={(event) => {
-                setRegisterPassword(event.target.value);
-              }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="input-container">
-            <label htmlFor="">Confirm Password:</label>
-            <input type="text" />
-          </div>
 
-          <button className="signin-btn" onClick={register}>SIGN UP</button>
+          <button className="signin-btn" onClick={handleRegister}>
+            SIGN UP
+          </button>
           <br />
           <div className="dont-have-account">
             Already have an account? <Link to="/login">Sign In</Link>
