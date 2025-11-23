@@ -468,10 +468,7 @@ const handleClearFilters = () => {
               </div>
               <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Voluptatem, aut deserunt rem impedit sint incidunt blanditiis in
-                consequuntur! Alias, mollitia provident? Cupiditate est dicta
-                incidunt autem, eius mollitia natus odio nobis voluptatibus sunt
-                molestias?
+                Voluptatem
               </p>
             </div>
 

@@ -5,7 +5,7 @@
     projectId: "mefmi-debt-management",
     storageBucket: "mefmi-debt-management.firebasestorage.app",
     messagingSenderId: "930877940124",
-    appId: "1:930877940124:web:e0720c3e408e97aea5a859",
+    
     measurementId: "G-HJBZWWMC0H"
   };
 
