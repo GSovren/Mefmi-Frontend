@@ -14,7 +14,7 @@ function RankingsSection() {
       <div className="dash-hero">
         <div className="explore-msg">
           <div className="msg">
-            Explore Statistical Rankings Across{" "}
+            Explore Rankings Across{" "}
             <span>15 African Countries. </span>
           </div>
         </div>

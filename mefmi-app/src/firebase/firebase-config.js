@@ -1,11 +1,11 @@
 // Firebase Configuration
   const firebaseConfig = {
-    apiKey: "AIzaSyAUhmuh01KfvBYVy71fC8mPVouYX5Q4gCM",
+
     authDomain: "mefmi-debt-management.firebaseapp.com",
     projectId: "mefmi-debt-management",
     storageBucket: "mefmi-debt-management.firebasestorage.app",
     messagingSenderId: "930877940124",
-    
+
     measurementId: "G-HJBZWWMC0H"
   };
 

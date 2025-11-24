@@ -45,7 +45,7 @@
     width: 100%;
     height: 50%;
     background-color: lightgray;
-    padding-top: 5px;
+    padding-top: 3px;
 }
 .explore-page-country-map-container{
     display: flex;
@@ -65,7 +65,7 @@
     font-weight: 600;
     color: var(--white);
     width: 100%;
-    padding: 5px 10px;
+    padding: 2px 10px;
     background-color: var(--app--green);
     gap: 10px;
 }
@@ -124,25 +124,36 @@
 
 
 
-
-.explore-page-filter-info-container{
-    display: flex;
+.top-filters-container{
+     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 68%;
     height: 100%;
     background-color: var(--white);
-    margin: 5px 5px 5px 2px;
-    padding: 5px 10px 0px 10px;
+    margin: 5px 5px 5px 5px;
+    padding: 0px 0px 0px 0px;
+}
+.explore-page-filter-info-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: var(--white);
+    margin: 5px 0px 5px 0px;
+    padding: 0px 5px 0px 5px;
+   
 }
 .filters-container-heading{
-    display: none;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: var(--app--green);
     color: var(--white);
-    padding: 5px 5px 5px 5px;
+    padding: 2px 5px 2px 5px;
     width: 100%;
     font-weight: 600;
     font-size: 13px;
@@ -184,19 +195,6 @@
     justify-content: center;
     align-items: center;
     padding: 3px 5px 3px 5px;
-    border-radius: 3px;
-}
-.currency-filter-primary{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--app--green);
-    font-weight: 600;
-}
-.currency-filter-primary select{
-    cursor: pointer;
-    font-size: 12px;
-    padding: 2px;
     border-radius: 3px;
 }
 .explore-page-input-container{
@@ -420,15 +418,16 @@
         height: 100%;
         border: 2px solid var(--app--green);
     }
+    .top-filters-container{
+        padding: 0px 5px 0px 5px;
+        width: 100%;
+    }
     .explore-page-filter-info-container{
-        width: 99%;
+        width: 100%;
         height: 100%;
         padding: 0px 5px 10px 5px;
     }
-    .filters-container-heading{
-        display: flex;
-        font-size: 16px;
-    }
+    
     .filter-info{
         margin: 10px;
     }
@@ -446,7 +445,7 @@
     .currency-filter-primary select{
         cursor: pointer;
         font-size: 14px;
-        padding: 2px;
+        padding: 0px;
         border-radius: 3px;
     }
     .explore-page-inputs{

@@ -325,7 +325,7 @@ const handleClearFilters = () => {
               </div>    
             </div>
           </div>
-          <div className="explore-page-filter-info-container">
+          <div className="top-filters-container">
             <div className="filters-container-heading">
               <div className="filters-container">
                 <i className="ri-filter-line"></i>&nbsp;FILTERS
@@ -349,6 +349,7 @@ const handleClearFilters = () => {
                   </div>
               </div>
             </div>
+            <div className="explore-page-filter-info-container">  
             <div className="filter-info">
               <div className="filter-instruction">
                 <div className="instruction-container">
@@ -358,23 +359,6 @@ const handleClearFilters = () => {
                 *Please select filter criteria below
                 </div>
                 
-                <div className="currency-filter-primary">
-                  <div className="explore-currency-input-container">
-                    <label>Currency:&nbsp;</label>
-                      <div className="dash-inputs">
-                      <select name="" id="select-currency">
-                          <option value="USD">USD</option>
-                          <option value="PULA">PULA</option>
-                          <option value="RAND">RAND</option>
-                          <option value="KWACHA">KWACHA</option>
-                          <option value="ZIG">ZIG</option>
-                      </select>
-                      <div className="drop-icon">
-                    <i className="ri-arrow-drop-down-fill"></i>
-                  </div>
-                    </div>
-                    </div>
-                </div>
               </div>
               <div className="explore-page-inputs">
                 <div className="explore-page-input-container">
@@ -497,6 +481,8 @@ const handleClearFilters = () => {
               </div>
             </div>
           </div>
+          </div>
+          
         </div>
         <div className="explore-page-bottom-container">
           <div className="explore-page-reports">
