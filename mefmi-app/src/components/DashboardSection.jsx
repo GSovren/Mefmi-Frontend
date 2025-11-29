@@ -1,3 +1,4 @@
+import React from 'react';
 import "../components/DashboardSection.css";
 import "../components/DashboardSectionMap.css";
 import {
@@ -10,7 +11,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Chart as ChartJS, defaults } from "chart.js/auto";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import memberCountriesMap from "../assets/Mefmi-member-countries.png";
-import AFDBlogo from "../assets/african-development-bank-logo-03.png";
+import AFDBlogo from '../assets/african-development-bank-logo-03.png'
 import sourceData from "../data/sourceData.json";
 import angolaSVG from "../assets/ao.svg";
 import burundiSVG from "../assets/bi.svg";
@@ -55,6 +56,7 @@ defaults.responsive = true;
 
 defaults.plugins.title.display = true;
 defaults.plugins.title.align = "start";
+// @ts-ignore
 defaults.plugins.title.font.size = 16;
 defaults.plugins.title.color = "black";
 
@@ -80,32 +82,34 @@ function DashboardSection() {
   const [hoveredCountry, setHoveredCountry] = useState(null);
   const [overallTotal, setOverallTotal] = useState(0);
 
-  const regionCountries = {
-    "Southern Africa": [
-      "Lesotho",
-      "Eswatini",
-      "Botswana",
-      "Namibia",
-      "Zimbabwe",
-      "Mozambique",
-      "Malawi",
-      "Zambia",
-      "Angola",
-    ],
-    "Eastern Africa": [
-      "Tanzania",
-      "Burundi",
-      "Rwanda",
-      "Kenya",
-      "Uganda",
-      "SouthSudan",
-    ],
-    "Northern Africa": [], // No countries highlighted
-    "Central Africa": [], // No countries highlighted
-    "Western Africa": [], // No countries highlighted
-  };
 
-  const highlightedCountries = regionCountries[selectedRegion] || [];
+  const regionCountries = {
+  "Southern Africa": [
+    "Lesotho",
+    "Eswatini",
+    "Botswana",
+    "Namibia",
+    "Zimbabwe",
+    "Mozambique",
+    "Malawi",
+    "Zambia",
+    "Angola",
+  ],
+  "Eastern Africa": [
+    "Tanzania",
+    "Burundi",
+    "Rwanda",
+    "Kenya",
+    "Uganda",
+    "SouthSudan",
+  ],
+  "Northern Africa": [], // No countries highlighted
+  "Central Africa": [],   // No countries highlighted
+  "Western Africa": [],   // No countries highlighted
+};
+
+const highlightedCountries = regionCountries[selectedRegion] || [];
+  
 
   // ------------------------------------------------ API CALL START -------------------------------------------------------------
 
@@ -122,7 +126,7 @@ function DashboardSection() {
     }
     getData();
 
-    console.log(results, "results");
+    console.log(results, "results"); 
 
     return () => {
       controller.abort();
@@ -142,7 +146,7 @@ function DashboardSection() {
     }
     getMapData();
 
-    console.log(mapResults, "results");
+    console.log(mapResults, "results"); 
 
     return () => {
       controller.abort();
@@ -163,7 +167,7 @@ function DashboardSection() {
   const handleResetFilters = () => {
     setCountryFilter(initialCountryFilter);
     setSelectedMetric(initialSelectedMetric);
-    setSelectedRegion("");
+    setSelectedRegion("")
   };
 
   // Handles metric change for entire dashbord page (Affecting Imteractive map and Charts)
@@ -235,85 +239,85 @@ function DashboardSection() {
 
   //-------------------------------------------------------------FUNCTION TO GET CHART DATA------------------------------------------------------------------------
   const getChartData = () => {
-    const labels = sourceData.map((item) => item.name);
-    const dataValues = sourceData.map((item) => item[selectedMetric]);
+  const labels = sourceData.map((item) => item.name);
+  const dataValues = sourceData.map((item) => item[selectedMetric]);
 
-    const minVal = Math.min(...dataValues);
-    const maxVal = Math.max(...dataValues);
-    const invertColors = selectedMetric === "inflation_rate";
+  const minVal = Math.min(...dataValues);
+  const maxVal = Math.max(...dataValues);
+  const invertColors = selectedMetric === "inflation_rate";
 
-    // Determine which countries to highlight
-    let highlightedCountries = [];
+  // Determine which countries to highlight
+  let highlightedCountries = [];
+
+  if (countryFilter) {
+    // Override: highlight only the country filter
+    highlightedCountries = [countryFilter];
+  } else if (
+    selectedRegion === "Southern Africa" ||
+    selectedRegion === "Eastern Africa"
+  ) {
+    highlightedCountries = regionCountries[selectedRegion];
+  } else if (
+    selectedRegion === "Northern Africa" ||
+    selectedRegion === "Central Africa" ||
+    selectedRegion === "Western Africa"
+  ) {
+    // Dim all countries in these regions
+    highlightedCountries = [];
+  } else {
+    // No region and no country filter: highlight all
+    highlightedCountries = sourceData.map((item) => item.name);
+  }
+
+  // Build backgroundColor array
+  const backgroundColors = dataValues.map((value, index) => {
+    const countryName = sourceData[index].name;
 
     if (countryFilter) {
-      // Override: highlight only the country filter
-      highlightedCountries = [countryFilter];
-    } else if (
-      selectedRegion === "Southern Africa" ||
-      selectedRegion === "Eastern Africa"
-    ) {
-      highlightedCountries = regionCountries[selectedRegion];
-    } else if (
-      selectedRegion === "Northern Africa" ||
-      selectedRegion === "Central Africa" ||
-      selectedRegion === "Western Africa"
-    ) {
-      // Dim all countries in these regions
-      highlightedCountries = [];
+      // When countryFilter is active, only highlight that country
+      if (countryName === countryFilter) {
+        return getColorForValue(value, minVal, maxVal, invertColors);
+      } else {
+        return "#8495a2ff"; // dim others
+      }
     } else {
-      // No region and no country filter: highlight all
-      highlightedCountries = sourceData.map((item) => item.name);
-    }
-
-    // Build backgroundColor array
-    const backgroundColors = dataValues.map((value, index) => {
-      const countryName = sourceData[index].name;
-
-      if (countryFilter) {
-        // When countryFilter is active, only highlight that country
-        if (countryName === countryFilter) {
+      // No country filter, apply region logic
+      if (
+        selectedRegion &&
+        (selectedRegion === "Northern Africa" ||
+          selectedRegion === "Central Africa" ||
+          selectedRegion === "Western Africa")
+      ) {
+        // Dim all countries if specific regions are selected
+        return "#8495a2ff";
+      } else {
+        // Highlight only countries in the region
+        if (highlightedCountries.includes(countryName)) {
           return getColorForValue(value, minVal, maxVal, invertColors);
         } else {
-          return "#8495a2ff"; // dim others
-        }
-      } else {
-        // No country filter, apply region logic
-        if (
-          selectedRegion &&
-          (selectedRegion === "Northern Africa" ||
-            selectedRegion === "Central Africa" ||
-            selectedRegion === "Western Africa")
-        ) {
-          // Dim all countries if specific regions are selected
           return "#8495a2ff";
-        } else {
-          // Highlight only countries in the region
-          if (highlightedCountries.includes(countryName)) {
-            return getColorForValue(value, minVal, maxVal, invertColors);
-          } else {
-            return "#8495a2ff";
-          }
         }
       }
-    });
+    }
+  });
 
-    return {
-      labels,
-      datasets: [
-        {
-          label: metricLabels[selectedMetric],
-          data: dataValues,
-          backgroundColor: backgroundColors,
-          borderRadius: 2,
-          borderWidth: 1,
-          borderColor: "darkGreen",
-          pointRadius: 4,
-          responsive: true,
-          maintainAspectRatio: true,
-        },
-      ],
-    };
+  return {
+    labels,
+    datasets: [
+      {
+        label: metricLabels[selectedMetric],
+        data: dataValues,
+        backgroundColor: backgroundColors,
+        borderRadius: 2,
+        borderWidth: 1,
+        borderColor: "darkGreen",
+        pointRadius: 4,
+        responsive: true,
+        maintainAspectRatio: true,
+      },
+    ],
   };
+};
 
   const chartData = getChartData();
 
@@ -338,96 +342,85 @@ function DashboardSection() {
   };
 
   // 2. Update fill colors whenever metric changes
-  useEffect(() => {
-    // Generate color mapping based on current metric
-    const dataValues = sourceData.map((item) => item[selectedMetric]);
-    const minVal = Math.min(...dataValues);
-    const maxVal = Math.max(...dataValues);
-    const invertColors = selectedMetric === "inflation_rate";
+useEffect(() => {
+  // Generate color mapping based on current metric
+  const dataValues = sourceData.map((item) => item[selectedMetric]);
+  const minVal = Math.min(...dataValues);
+  const maxVal = Math.max(...dataValues);
+  const invertColors = selectedMetric === "inflation_rate";
 
-    const metricColorMap = {};
-    sourceData.forEach((item) => {
-      const countryName = item.name; // ensure matches class names
-      const value = item[selectedMetric];
-      const color = getColorForValue(value, minVal, maxVal, invertColors);
-      metricColorMap[countryName] = color;
-    });
-    setCountryColorMap(metricColorMap);
+  const metricColorMap = {};
+  sourceData.forEach((item) => {
+    const countryName = item.name; // ensure matches class names
+    const value = item[selectedMetric];
+    const color = getColorForValue(value, minVal, maxVal, invertColors);
+    metricColorMap[countryName] = color;
+  });
+  setCountryColorMap(metricColorMap);
 
-    // List of 15 countries to dim when a countryFilter is active
-    const dimmedCountries = [
-      "Angola",
-      "Botswana",
-      "Burundi",
-      "Eswatini",
-      "Kenya",
-      "Lesotho",
-      "Malawi",
-      "Mozambique",
-      "Namibia",
-      "Rwanda",
-      "South Sudan",
-      "Tanzania",
-      "Uganda",
-      "Zambia",
-      "Zimbabwe",
-    ];
+  // List of 15 countries to dim when a countryFilter is active
+  const dimmedCountries = [
+    "Angola", "Botswana", "Burundi", "Eswatini", "Kenya",
+    "Lesotho", "Malawi", "Mozambique", "Namibia", "Rwanda",
+    "South Sudan", "Tanzania", "Uganda", "Zambia", "Zimbabwe"
+  ];
 
-    // Determine which countries to highlight based on region
-    let highlightedCountries = [];
-    if (
-      selectedRegion === "Southern Africa" ||
-      selectedRegion === "Eastern Africa"
-    ) {
-      highlightedCountries = regionCountries[selectedRegion];
-    } else if (
-      selectedRegion === "Northern Africa" ||
-      selectedRegion === "Central Africa" ||
-      selectedRegion === "Western Africa"
-    ) {
-      // Dim all countries
-      highlightedCountries = [];
-    } else {
-      // No region selected: highlight all
-      highlightedCountries = sourceData.map((item) => item.name);
-    }
+  // Determine which countries to highlight based on region
+  let highlightedCountries = [];
+  if (
+    selectedRegion === "Southern Africa" ||
+    selectedRegion === "Eastern Africa"
+  ) {
+    highlightedCountries = regionCountries[selectedRegion];
+  } else if (
+    selectedRegion === "Northern Africa" ||
+    selectedRegion === "Central Africa" ||
+    selectedRegion === "Western Africa"
+  ) {
+    // Dim all countries
+    highlightedCountries = [];
+  } else {
+    // No region selected: highlight all
+    highlightedCountries = sourceData.map((item) => item.name);
+  }
 
-    // Apply colors to SVG map
-    Object.keys(countryColors).forEach((country) => {
-      let fillColor;
+  // Apply colors to SVG map
+  Object.keys(countryColors).forEach((country) => {
+    let fillColor;
 
-      if (countryFilter) {
-        // When countryFilter is active:
-        if (country === countryFilter) {
-          // Highlight only the selected country
-          fillColor = metricColorMap[country] || countryColors[country];
-        } else if (dimmedCountries.includes(country)) {
-          // Dim the specified countries
-          fillColor = "#8495a2ff";
-        } else {
-          // For other countries not in the dim list, keep dimmed
-          fillColor = "#8495a2ff";
-        }
+    if (countryFilter) {
+      // When countryFilter is active:
+      if (country === countryFilter) {
+        // Highlight only the selected country
+        fillColor = metricColorMap[country] || countryColors[country];
+      } else if (dimmedCountries.includes(country)) {
+        // Dim the specified countries
+        fillColor = "#8495a2ff";
       } else {
-        // When no countryFilter:
-        if (highlightedCountries.length === 0) {
-          // Dim all countries
-          fillColor = "#8495a2ff";
+        // For other countries not in the dim list, keep dimmed
+        fillColor = "#8495a2ff";
+      }
+    } else {
+      // When no countryFilter:
+      if (highlightedCountries.length === 0) {
+        // Dim all countries
+        fillColor = "#8495a2ff";
+      } else {
+        // Highlight only specified countries
+        if (highlightedCountries.includes(country)) {
+          fillColor = metricColorMap[country] || countryColors[country];
         } else {
-          // Highlight only specified countries
-          if (highlightedCountries.includes(country)) {
-            fillColor = metricColorMap[country] || countryColors[country];
-          } else {
-            fillColor = "#8495a2ff";
-          }
+          fillColor = "#8495a2ff";
         }
       }
+    }
 
-      document.querySelectorAll(`.${country}`).forEach((elem) => {
-        elem.setAttribute("fill", fillColor);
-      });
+    document.querySelectorAll(`.${country}`).forEach((elem) => {
+      elem.setAttribute("fill", fillColor);
     });
-  }, [selectedMetric, countryFilter, selectedRegion]);
+  });
+}, [selectedMetric, countryFilter, selectedRegion]);
+
 
   //-------------------------------------ARRAYS FOR (COUNTRY MAPS) AND (COUNTRY FLAGS) / COUNTRY MENU FUNCTIONS ----------------------------------------------------
 
@@ -503,6 +496,8 @@ function DashboardSection() {
     });
   };
 
+  
+
   // Toggle Country menu display
   const toggleCountryMenu = () => {
     setCountryMenu((prev) => !prev);
@@ -558,14 +553,9 @@ function DashboardSection() {
               </h2>
               <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque
-                dolore, dolorem similique, nihil iste fugit assumenda
-                consequatur fuga vero ipsa saepe possimus cumque corrupti
-                fugiat. Quis maiores tenetur voluptas cum?
+                dolore.
               </p>
-              <button
-                className="dash-explore-more-btn"
-                onClick={handleExploreMoreClick}
-              >
+              <button className="dash-explore-more-btn" onClick={handleExploreMoreClick}>
                 Explore More <i className="ri-arrow-right-line"></i>
               </button>
               <div className="country-slider-icons">
@@ -597,119 +587,121 @@ function DashboardSection() {
               <div className="filters-container">
                 <i className="ri-filter-line"></i>&nbsp;FILTERS
               </div>
-
+              
               <div className="currency-filter">
-                <div className="dash-currency-input-container">
-                  <label>Currency:</label>
-                  <div className="dash-inputs">
-                    <select name="" id="select-currency">
-                      <option value="USD">USD</option>
-                      <option value="PULA">PULA</option>
-                      <option value="RAND">RAND</option>
-                      <option value="KWACHA">KWACHA</option>
-                      <option value="ZIG">ZIG</option>
-                    </select>
-                    <div className="drop-icon">
-                      <i className="ri-arrow-drop-down-fill"></i>
+                  <div className="dash-currency-input-container">
+                    <label>Currency:</label>
+                    <div className="dash-inputs">
+                      <select name="" id="select-currency">
+                          <option value="USD">USD</option>
+                          <option value="PULA">PULA</option>
+                          <option value="RAND">RAND</option>
+                          <option value="KWACHA">KWACHA</option>
+                          <option value="ZIG">ZIG</option>
+                      </select>
+                      <div className="drop-icon">
+                    <i className="ri-arrow-drop-down-fill"></i>
+                  </div>
                     </div>
                   </div>
-                </div>
               </div>
             </p>
             <div className="dash-filters">
+              
               <div className="dash-inputs-container">
                 <div className="dash-filters-title">
-                  *Select Dashboard Filters Below.
-                </div>
+                *Select Dashboard Filters Below.
+              </div>
                 <div className="dash-inputs">
-                  <label htmlFor="select-metric">By Metric:</label>
-                  <div className="dash-select">
-                    <select
-                      name=""
-                      id="select-metric"
-                      value={selectedMetric}
-                      onChange={handleMetricChange}
-                    >
-                      <option value="public_debt">Public Debt</option>
-                      <option value="total_debt">Total Debt</option>
-                      <option value="external_debt">External Debt</option>
-                      <option value="domestic_debt">Domestic Debt</option>
-                      <option value="yearly_financing">Yearly Financing</option>
-                    </select>
-                    <div className="drop-icon">
-                      <i className="ri-arrow-drop-down-fill"></i>
-                    </div>
+                <label htmlFor="select-metric">By Metric:</label>
+                <div className="dash-select">
+                  <select
+                  name=""
+                  id="select-metric"
+                  value={selectedMetric}
+                  onChange={handleMetricChange}
+                >
+                  <option value="public_debt">Public Debt</option>
+                  <option value="total_debt">Total Debt</option>
+                  <option value="external_debt">External Debt</option>
+                  <option value="domestic_debt">Domestic Debt</option>
+                  <option value="yearly_financing">Yearly Financing</option>
+                </select>
+                <div className="drop-icon">
+                    <i className="ri-arrow-drop-down-fill"></i>
                   </div>
-                </div>
+                </div>               
+              </div>
 
-                <div className="dash-inputs">
-                  <label htmlFor="select-metric">By Region:</label>
-                  <div className="dash-select">
-                    <select
-                      id="select-region"
-                      value={selectedRegion}
-                      onChange={(e) => {
-                        setSelectedRegion(e.target.value);
-                        if (e.target.value !== "") {
-                          setCountryFilter(""); // reset country filter when region is selected
-                        }
-                      }}
-                    >
-                      <option value="">-- Select Region --</option>
-                      <option value="Northern Africa">Northern Africa</option>
-                      <option value="Western Africa">Western Africa</option>
-                      <option value="Central Africa">Central Africa</option>
-                      <option value="Eastern Africa">Eastern Africa</option>
-                      <option value="Southern Africa">Southern Africa</option>
-                    </select>
-                    <div className="drop-icon">
-                      <i className="ri-arrow-drop-down-fill"></i>
-                    </div>
-                  </div>
-                </div>
+              <div className="dash-inputs">
+  <label htmlFor="select-metric">By Region:</label>
+  <div className="dash-select">
+    <select
+      id="select-region"
+  value={selectedRegion}
+  onChange={(e) => {
+    setSelectedRegion(e.target.value);
+    if (e.target.value !== "") {
+      setCountryFilter(""); // reset country filter when region is selected
+    }
+  }}
+    >
+      <option value="">-- Select Region --</option>
+      <option value="Northern Africa">Northern Africa</option>
+      <option value="Western Africa">Western Africa</option>
+      <option value="Central Africa">Central Africa</option>
+      <option value="Eastern Africa">Eastern Africa</option>
+      <option value="Southern Africa">Southern Africa</option>
+    </select>
+    <div className="drop-icon">
+      <i className="ri-arrow-drop-down-fill"></i>
+    </div>
+  </div>
+</div>
 
-                <div className="dash-inputs">
-                  <label htmlFor="select-country">By Country:</label>
-                  <div className="dash-select">
-                    <select
-                      name=""
-                      id="select-country"
-                      value={countryFilter}
-                      onChange={(e) => {
-                        setCountryFilter(e.target.value);
-                        if (e.target.value !== "") {
-                          setSelectedRegion(""); // reset region when country is selected
-                        }
-                      }}
-                    >
-                      <option value="">-- No -- country -- selected --</option>
-                      <option value="Angola">Angola</option>
-                      <option value="Botswana">Botswana</option>
-                      <option value="Burundi">Burundi</option>
-                      <option value="Eswatini">Eswatini</option>
-                      <option value="Kenya">Kenya</option>
-                      <option value="Lesotho">Lesotho</option>
-                      <option value="Malawi">Malawi</option>
-                      <option value="Mozambique">Mozambique</option>
-                      <option value="Namibia">Namibia</option>
-                      <option value="Rwanda">Rwanda</option>
-                      <option value="SouthSudan">South Sudan</option>
-                      <option value="Tanzania">Tanzania</option>
-                      <option value="Uganda">Uganda</option>
-                      <option value="Zambia">Zambia</option>
-                      <option value="Zimbabwe">Zimbabwe</option>
-                    </select>
-                    <div className="drop-icon">
-                      <i className="ri-arrow-drop-down-fill"></i>
-                    </div>
+              <div className="dash-inputs">
+                <label htmlFor="select-country">By Country:</label>
+                <div className="dash-select">
+                  <select
+                  name=""
+                  id="select-country"
+  value={countryFilter}
+  onChange={(e) => {
+    setCountryFilter(e.target.value);
+    if (e.target.value !== "") {
+      setSelectedRegion(""); // reset region when country is selected
+    }
+  }}
+                >
+                  <option value="">-- No -- country -- selected --</option>
+                  <option value="Angola">Angola</option>
+                  <option value="Botswana">Botswana</option>
+                  <option value="Burundi">Burundi</option>
+                  <option value="Eswatini">Eswatini</option>
+                  <option value="Kenya">Kenya</option>
+                  <option value="Lesotho">Lesotho</option>
+                  <option value="Malawi">Malawi</option>
+                  <option value="Mozambique">Mozambique</option>
+                  <option value="Namibia">Namibia</option>
+                  <option value="Rwanda">Rwanda</option>
+                  <option value="SouthSudan">South Sudan</option>
+                  <option value="Tanzania">Tanzania</option>
+                  <option value="Uganda">Uganda</option>
+                  <option value="Zambia">Zambia</option>
+                  <option value="Zimbabwe">Zimbabwe</option>
+                </select>
+                <div className="drop-icon">
+                    <i className="ri-arrow-drop-down-fill"></i>
                   </div>
-                </div>
-                <div className="reset-filters">
-                  <button id="reset-filters" onClick={handleResetFilters}>
-                    Reset Filters
-                  </button>
                 </div>
               </div>
+              <div className="reset-filters">
+                <button id="reset-filters" onClick={handleResetFilters}>
+                  Reset Filters
+                </button>
+              </div>
+              </div>
+            
 
               <div className="color-codes-container">
                 <div className="color-key-header">Color Key:</div>
@@ -4138,6 +4130,7 @@ function DashboardSection() {
         </div>
         <div className="dash-container-right">
           <div className="pie-chart-container">
+            
             <h3>
               {" "}
               Chart Visualisation

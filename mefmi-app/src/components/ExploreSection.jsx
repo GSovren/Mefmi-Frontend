@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../components/ExploreSection.css";
 import { useLocation, Link, NavLink, useNavigate } from "react-router-dom";
 import sourceData from "../data/sourceData.json";

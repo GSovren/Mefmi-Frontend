@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/Mefmi-logo-full.jpg";
@@ -86,7 +86,7 @@ function Navbar() {
               {/* <div className="afdb-logo">
               <img src={AFDBlogo} alt="" />{" "}
               </div> */}
-              {/* <h2>"One stop,One Africa, discover more with MEFMI"</h2> */}
+              <h2>"One stop,One Africa, discover more with MEFMI"</h2>
             </Link>
             <div className="nav-menu-container">
               <ul className={click ? "nav-menu active" : "nav-menu"}>

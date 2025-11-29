@@ -1,5 +1,5 @@
 import React from "react";
-import "../components/DashboardSectionMapAfrica";
+import "./DashboardSectionMapAfrica";
 
 function DashboardSectionMapAfrica() {
   return (

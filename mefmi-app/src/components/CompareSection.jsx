@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../components/CompareSection.css";
 import logo from "../assets/Mefmi-logo-full.jpg";
-import AFDBlogo from "../assets/AFDB Logo.png";
+// import AFDBlogo from "../assets/AFDB Logo.png";
 import sourceDataExplore from "../data/sourceDataExplore.json";
-import { useLocation, Link, NavLink, useNavigate } from "react-router-dom";
+import {useLocation} from "react-router-dom"
 
 import angolaFlag from "../assets/angola.png";
 import burundiFlag from "../assets/burundi.png";
@@ -248,15 +248,6 @@ const handleClearFiltersThird = () => {
 
   return (
     <div className="compare-page-container">
-      <div className="dash-hero">
-        <div className="explore-msg">
-          <div className="msg">
-            Compare Metrics Across{" "}
-            <span>15 African Countries. </span>
-            {/* <img src={memberCountriesMap} alt="" /> */}
-          </div>
-        </div>
-      </div>
       <div className="compare-page-inner-container">
         <div className="compare-page-top-container">
           <div className="compare-page-explore-cta">

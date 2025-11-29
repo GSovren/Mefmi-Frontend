@@ -413,7 +413,7 @@
     color: var(--white);
     background-color: var(--app--green);
     border-radius: 3px; 
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .dash-inputs-container{
@@ -448,7 +448,7 @@
     width: 100%;
 }
 #select-currency{
-    font-size: 11px;
+    font-size: 13px;
     padding: 3px;
     width: 70px;
 }
@@ -641,7 +641,7 @@
     justify-content: start;
     width: 100%;
     top: 3px;
-    padding: 5px 8px;
+    padding: 6px 8px;
     border-bottom: 2px solid var(--app-dark--green);
     font-size: 14px;
     font-weight: 600;
@@ -1058,12 +1058,16 @@ h3 span{
         padding: 5px;
         margin: 0px 0px 24px 0px;
     }
+    .dash-currency-input-container{
+        font-size: 16px;
+    }
     .dash-filters-container{
         height: 100%;
-        margin: 0 px 0px;
+        margin: 0px 0px;
     }
     .dash-filters-container p{
         font-size: 16px;
+        padding: 8px 8px 8px 8px;
         align-items: flex-start;
     }
     .dash-filters-title{

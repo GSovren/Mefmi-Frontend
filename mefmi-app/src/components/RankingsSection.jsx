@@ -3264,7 +3264,7 @@ function RankingsSection() {
                                 </div>
                               </TransformComponent>
                               <div className="rankings-map-border-patch"></div>
-                              <div className="map-title">
+                              <div className="rankings-map-title">
                                 <i className="ri-map-pin-line"></i> Rankings Map selector
                               </div>
                               <div className="dash-card-stats">
@@ -3313,6 +3313,9 @@ function RankingsSection() {
         </div>
         <div className="rankings-right-container">
           <div className="rankings-filters-container">
+            <div className="rankings-heading">
+          Rankings List
+        </div>
             <div className="filter-info">
               <div className="filter-instruction">
                 <div className="instruction-container">
@@ -3377,9 +3380,6 @@ function RankingsSection() {
             </div>
           </div>
           <div className="rankings-list-container">
-        <div className="rankings-heading">
-          Rankings List
-        </div>
         <div className="rankings-table-container">
           <div className="rankings-table">
             <table id="rankings-table">
