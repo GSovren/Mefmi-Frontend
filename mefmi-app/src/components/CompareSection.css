@@ -327,6 +327,8 @@
     background-color: var(--white);
     border: 1px solid var(--app--green);
     margin: 0px 0px;
+    text-align: center;
+    font-size: 13px;
 }
 .head-metric-options i{
     padding-left: 10px;

@@ -371,7 +371,7 @@ tbody{
     overflow-y: scroll;
 }
 td{  
-  font-size: 13px;
+  font-size: 12px;
   text-align: left;
   padding: 8px;
   border: 1px solid lightgray;
@@ -384,6 +384,7 @@ tr:nth-of-type(2n) {
     justify-content: space-evenly;
     align-items: center;
     gap: 2px;
+    border: none;
 }
 .action-btn button{
     display: flex;

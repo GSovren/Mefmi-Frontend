@@ -21,6 +21,7 @@ function UploadSection() {
 
   const handleFiles = (files) => {
     const newFiles = Array.from(files).filter((file) => {
+      // @ts-ignore
       const extension = "." + file.name.split(".").pop().toLowerCase();
       return supportedTypes.includes(extension);
     });

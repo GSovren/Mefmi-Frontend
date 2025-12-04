@@ -165,6 +165,41 @@ const handleClearFilters = () => {
 
 
 
+  const regionCountries = {
+    "Southern Africa": [
+      "Lesotho",
+      "Eswatini",
+      "Botswana",
+      "Namibia",
+      "Zimbabwe",
+      "Mozambique",
+      "Malawi",
+      "Zambia",
+      "Angola",
+    ],
+    "Eastern Africa": [
+      "Tanzania",
+      "Burundi",
+      "Rwanda",
+      "Kenya",
+      "Uganda",
+      "SouthSudan",
+    ],
+    "Northern Africa": [], // No countries highlighted
+    "Central Africa": [], // No countries highlighted
+    "Western Africa": [], // No countries highlighted
+  };
+
+  const getRegionName = (countryName) => {
+  for (const [regionName, countries] of Object.entries(regionCountries)) {
+    if (countries.includes(countryName)) {
+      return regionName;
+    }
+  }
+  return "N/A"; // fallback if not found
+};
+
+
   // ------------------------------------------------FUNCTION TO INTERPOLATE COLORS-------------------------------------------------------------
   // Define your color stops for the gradient
   // const colorStops = [
@@ -239,11 +274,11 @@ const handleClearFilters = () => {
 
   // Define the metrics you want to display
   const metrics = [
-    { key: "total_debt", label: "Total Debt" },
-    { key: "external_debt", label: "External Debt" },
-    { key: "domestic_debt", label: "Domestic Debt" },
-    { key: "yearly_financing", label: "Yearly Financing" },
-    { key: "public_debt", label: "Public Debt" },
+    { key: "total_debt", label: "Total External" },
+    { key: "external_debt", label: "Total Domestic" },
+    { key: "domestic_debt", label: "Central Government" },
+    { key: "yearly_financing", label: "Publicly Guarenteeed" },
+    { key: "public_debt", label: "Total PPG" },
   ];
 
   // Prepare labels (X-axis labels)
@@ -282,6 +317,38 @@ const handleClearFilters = () => {
 
   const chartData = getChartData();
 
+  //-------------------------------------------------------------FUNCTION TO GET EXPLORE CARD DATA------------------------------------------------------------------------
+
+const getDataValues = () => {
+  if (!selectedCountry || !selectedYear) return {};
+
+  const countryObj = sourceDataExplore.countries.find(
+    (c) => c.name === selectedCountry
+  );
+  if (!countryObj || !countryObj.data) return {};
+
+  const dataPoint = countryObj.data[selectedYear] || null;
+
+  if (!dataPoint) return {};
+
+  return {
+    public_debt: dataPoint.public_debt,
+    total_debt: dataPoint.total_debt,
+    external_debt: dataPoint.external_debt,
+    domestic_debt: dataPoint.domestic_debt,
+    yearly_financing: dataPoint.yearly_financing,
+  };
+};
+
+const dataValues = getDataValues();
+const {
+  public_debt,
+  total_debt,
+  external_debt,
+  domestic_debt,
+  yearly_financing,
+} = dataValues;
+
 
 
   return (
@@ -312,7 +379,7 @@ const handleClearFilters = () => {
                   )}
                 </h2> 
               </div>
-            <div className="explore-country-map"> 
+            <div className="explore-country-map">   
               <div className="map-data">    
               <div className="country-map-image">
                 {/* Dynamically update the SVG map image source */}
@@ -333,29 +400,26 @@ const handleClearFilters = () => {
               
               <div className="currency-filter">
                   <div className="dash-currency-input-container">
-                    <label>Currency:&nbsp;</label>
-                    <div className="dash-inputs">
-                      <select name="" id="select-currency">
-                          <option value="USD">USD</option>
-                          <option value="PULA">PULA</option>
-                          <option value="RAND">RAND</option>
-                          <option value="KWACHA">KWACHA</option>
-                          <option value="ZIG">ZIG</option>
-                      </select>
-                      <div className="drop-icon">
-                    <i className="ri-arrow-drop-down-fill"></i>
-                  </div>
+                  <label>Currency:</label>
+                  <div className="dash-inputs">
+                    <select name="" id="select-currency">
+                      <option value="USD">USD</option>
+                      <option value="Euro">Euro</option>
+                      <option value="CNY">CNY</option>
+                      <option value="Yen">Yen</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <div className="drop-icon">
+                      <i className="ri-arrow-drop-down-fill"></i>
                     </div>
                   </div>
+                </div>
               </div>
             </div>
             <div className="explore-page-filter-info-container">  
             <div className="filter-info">
               <div className="filter-instruction">
                 <div className="instruction-container">
-                  <p>
-                  FILTERS <i className="ri-filter-line"></i>
-                </p>{" "}
                 *Please select filter criteria below
                 </div>
                 
@@ -447,36 +511,30 @@ const handleClearFilters = () => {
             </div>
 
             <div className="country-bio-container">
-              <div className="bio-heading">
-                Country Biography: &nbsp;
-              </div>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Voluptatem
+                Regional Location: <span>{getRegionName(selectedCountry)}</span>
               </p>
             </div>
+            <div className="bio-heading">
+                Total Public & Publicly Guaranteed Debt (PPG): &nbsp;
+              </div>
 
             <div className="explore-page-cards-container">
               <div className="explore-page-cards">
                 <div className="explore-card">
-                  Total Debt
-                  <p>$10.346.900</p>
+                  Total External Debt <br /> <p>${total_debt}</p>
                 </div>
                 <div className="explore-card">
-                  Public Debt
-                  <p>$10.346.900</p>
+                  Total Domestic Debt <br /> <p>${external_debt}</p>
                 </div>
                 <div className="explore-card">
-                  External Debt
-                  <p>$10.346.900</p>
+                  Central Government Debt<br /> <p>${domestic_debt}</p>
                 </div>
                 <div className="explore-card">
-                  Domestic Debt
-                  <p>$10.346.900</p>
+                  Publicly Guarenteed Debt<br /> <p>${yearly_financing}</p>
                 </div>
                 <div className="explore-card">
-                  Yearly Financing
-                  <p>$10.346.900</p>
+                  Total PPG (% of GDP) <br /> <p>${public_debt}</p>
                 </div>
               </div>
             </div>
@@ -489,55 +547,48 @@ const handleClearFilters = () => {
             <div className="chart-heading">Associated reports</div>
             <div className="reports-table">
               <table id="reports-table">
-                <thead>
-                  <th>Description</th>
-                  <th>Action</th>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Total Debt Report</td>
-                    <td className="action-btn">
-                      <button id="view-btn">View</button>
-                      <button id="download-btn">Downlaod</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>External Debt Report</td>
-                    <td className="action-btn">
-                      <button id="view-btn">View</button>
-                      <button id="download-btn">Downlaod</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Domestic Report</td>
-                    <td className="action-btn">
-                      <button id="view-btn">View</button>
-                      <button id="download-btn">Downlaod</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Yearly Financing Report</td>
-                    <td className="action-btn">
-                      <button id="view-btn">View</button>
-                      <button id="download-btn">Downlaod</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Public Report</td>
-                    <td className="action-btn">
-                      <button id="view-btn">View</button>
-                      <button id="download-btn">Downlaod</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>External Debt Report</td>
-                    <td className="action-btn">
-                      <button id="view-btn">View</button>
-                      <button id="download-btn">Downlaod</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                  <thead>
+                    <th>Description</th>
+                    <th>Action</th>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Total External debt</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Total Domestic debt</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Central Government debt</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Publicly Guarenteed debt</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Total PPG (% of GDP)</td>
+                      <td className="action-btn">
+                        <button id="view-btn">View</button>
+                        <button id="download-btn">Downlaod</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
             </div>
           </div>
           <div className="explore-page-charts-container">

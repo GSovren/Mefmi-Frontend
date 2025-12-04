@@ -3,7 +3,7 @@ import "../components/CompareSection.css";
 import logo from "../assets/Mefmi-logo-full.jpg";
 // import AFDBlogo from "../assets/AFDB Logo.png";
 import sourceDataExplore from "../data/sourceDataExplore.json";
-import {useLocation} from "react-router-dom"
+import { useLocation } from "react-router-dom";
 
 import angolaFlag from "../assets/angola.png";
 import burundiFlag from "../assets/burundi.png";
@@ -24,20 +24,51 @@ import ZimbabweFlag from "../assets/zimbabwe.png";
 function CompareSection() {
   const location = useLocation();
   const initialCountry = location.state?.country || "";
-  const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+  
+  const [selectedCountry, setSelectedCountry] = useState(() => {
+  if (location.state?.country) {
+    return location.state.country;
+  }
+  return localStorage.getItem('selectedCountry') || "";
+});
+// Sync to localStorage whenever selectedCountry updates
+useEffect(() => {
+  localStorage.setItem('selectedCountry', selectedCountry);
+}, [selectedCountry]);
 
-
-  const [selectedMetric, setSelectedMetric] = useState('');
+  const [selectedMetric, setSelectedMetric] = useState("");
   const [selectedYear, setSelectedYear] = useState("2025");
   const [currentData, setCurrentData] = useState(null);
 
-  const [selectedCountrySecond, setSelectedCountrySecond] = useState("");
+
+  const [selectedCountrySecond, setSelectedCountrySecond] = useState(() => {
+  return localStorage.getItem('selectedCountrySecond') || "";
+});
   const [selectedYearSecond, setSelectedYearSecond] = useState("2025");
   const [currentDataSecond, setCurrentDataSecond] = useState(null);
+useEffect(() => {
+  localStorage.setItem('selectedCountrySecond', selectedCountrySecond);
+}, [selectedCountrySecond]);
 
-  const [selectedCountryThird, setSelectedCountryThird] = useState("");
+
+  const [selectedCountryThird, setSelectedCountryThird] = useState(() => {
+  return localStorage.getItem('selectedCountryThird') || "";
+});
   const [selectedYearThird, setSelectedYearThird] = useState("2025");
   const [currentDataThird, setCurrentDataThird] = useState(null);
+useEffect(() => {
+  localStorage.setItem('selectedCountryThird', selectedCountryThird);
+}, [selectedCountryThird]);
+
+// Optional: update state if location.state changes
+useEffect(() => {
+  if (location.state?.country) setSelectedCountry(location.state.country);
+  if (location.state?.countrySecond) setSelectedCountrySecond(location.state.countrySecond);
+  if (location.state?.countryThird) setSelectedCountryThird(location.state.countryThird);
+}, [location.state]);
+
+
+
 
   const countryFlags = {
     Angola: angolaFlag,
@@ -111,7 +142,6 @@ function CompareSection() {
     }
   }, [selectedCountryThird, selectedYearThird]);
 
-
   const dataValues = [
     currentData?.total_debt,
     currentData?.public_debt,
@@ -121,20 +151,20 @@ function CompareSection() {
   ].filter((val) => val !== undefined && val !== null);
 
   const dataValuesSecond = [
-  currentDataSecond?.total_debt,
-  currentDataSecond?.public_debt,
-  currentDataSecond?.external_debt,
-  currentDataSecond?.domestic_debt,
-  currentDataSecond?.yearly_financing,
-].filter(val => val !== undefined && val !== null);
+    currentDataSecond?.total_debt,
+    currentDataSecond?.public_debt,
+    currentDataSecond?.external_debt,
+    currentDataSecond?.domestic_debt,
+    currentDataSecond?.yearly_financing,
+  ].filter((val) => val !== undefined && val !== null);
 
-const dataValuesThird = [
-  currentDataThird?.total_debt,
-  currentDataThird?.public_debt,
-  currentDataThird?.external_debt,
-  currentDataThird?.domestic_debt,
-  currentDataThird?.yearly_financing,
-].filter(val => val !== undefined && val !== null);
+  const dataValuesThird = [
+    currentDataThird?.total_debt,
+    currentDataThird?.public_debt,
+    currentDataThird?.external_debt,
+    currentDataThird?.domestic_debt,
+    currentDataThird?.yearly_financing,
+  ].filter((val) => val !== undefined && val !== null);
 
   // Handlers for select change
   const handleCountryChange = (e) => {
@@ -159,28 +189,27 @@ const dataValuesThird = [
   };
 
   const handleMetricToggle = (metric) => {
-  if (selectedMetric === metric) {
-    setSelectedMetric(''); // toggle off if already selected
-  } else {
-    setSelectedMetric(metric);
-  }
-};
+    if (selectedMetric === metric) {
+      setSelectedMetric(""); // toggle off if already selected
+    } else {
+      setSelectedMetric(metric);
+    }
+  };
 
   // Handler function to clear filters
-const handleClearFilters = () => {
-  setSelectedMetric("");
-  setSelectedCountry("");
-  setSelectedYear("2025")
-};
-const handleClearFiltersSecond = () => {
-  setSelectedCountrySecond("");
-  setSelectedYearSecond("2025");
-};
-const handleClearFiltersThird = () => {
-  setSelectedCountryThird("");
-  setSelectedYearThird("2025");
-};
-
+  const handleClearFilters = () => {
+    setSelectedMetric("");
+    setSelectedCountry("");
+    setSelectedYear("2025");
+  };
+  const handleClearFiltersSecond = () => {
+    setSelectedCountrySecond("");
+    setSelectedYearSecond("2025");
+  };
+  const handleClearFiltersThird = () => {
+    setSelectedCountryThird("");
+    setSelectedYearThird("2025");
+  };
 
   // ------------------------------------------------FUNCTION TO INTERPOLATE COLORS-------------------------------------------------------------
   const colorStops = [
@@ -273,66 +302,102 @@ const handleClearFiltersThird = () => {
               Select countries and compare statistical data over time
             </div>
             <div className="compare-currency-input-container">
-                    <label>Currency:&nbsp;</label>
-                      <div className="dash-inputs">
-                      <select name="" id="select-currency">
-                          <option value="USD">USD</option>
-                          <option value="PULA">PULA</option>
-                          <option value="RAND">RAND</option>
-                          <option value="KWACHA">KWACHA</option>
-                          <option value="ZIG">ZIG</option>
-                      </select>
-                      <div className="drop-icon">
-                    <i className="ri-arrow-drop-down-fill"></i>
-                  </div>
-                    </div>
-                    </div>
+              <label>Currency:</label>
+              <div className="dash-inputs">
+                <select name="" id="select-currency">
+                  <option value="USD">USD</option>
+                  <option value="Euro">Euro</option>
+                  <option value="CNY">CNY</option>
+                  <option value="Yen">Yen</option>
+                  <option value="Other">Other</option>
+                </select>
+                <div className="drop-icon">
+                  <i className="ri-arrow-drop-down-fill"></i>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className="compare-page-bottom-container">
           <div className="compare-page-filters-container">
             <div className="compare-filters-heading">
               <div className="compare-filters-metric-input-container">
-                <label htmlFor="select-country">
-                  *Filters
-                </label>
+                <label htmlFor="select-country">By debt as % Total PPG:</label>
                 <div className="compare-filters-metric-input">
                   <div className="filter-metrics-select">
-                  <select name="" id="select-metric" onChange={(e) => setSelectedMetric(e.target.value)}>
-                    <option value="">select metric</option>
-                    <option value="total_debt">Total Debt</option>
-                    <option value="public_debt">Public Debt</option>                 
-                    <option value="external_debt">External Debt</option>
-                    <option value="domestic_debt">Domestic Debt</option>
-                    <option value="yearly_financing">Yearly Financing</option>
-                  </select>
-                  <div className="compare-drop-icon">
-                    <i className="ri-arrow-drop-down-fill"></i>
+                    <select
+                      name=""
+                      id="select-metric"
+                      onChange={(e) => setSelectedMetric(e.target.value)}
+                    >
+                      <option value="">-- none selected --</option>
+                      <option value="total_debt">Total External debt</option>
+                      <option value="public_debt">Total Domestic debt</option>
+                      <option value="external_debt">Central Government debt</option>
+                      <option value="domestic_debt">Publicly Guarenteed debt</option>
+                      <option value="yearly_financing">Total PPG (% of GDP)</option>
+                    </select>
+                    <div className="compare-drop-icon">
+                      <i className="ri-arrow-drop-down-fill"></i>
+                    </div>
                   </div>
                 </div>
-                </div>                
               </div>
             </div>
             <thead className="compare-table-head">
-              <th className={`head-metric-options ${selectedMetric === 'total_debt' ? 'active' : ''}`} onClick={() => handleMetricToggle('total_debt')}> Total Debt <i className="ri-arrow-right-fill"></i></th>
-              <th className={`head-metric-options ${selectedMetric === 'public_debt' ? 'active' : ''}`} onClick={() => handleMetricToggle('public_debt')}> Public Debt <i className="ri-arrow-right-fill"></i></th>
-              <th className={`head-metric-options ${selectedMetric === 'external_debt' ? 'active' : ''}`} onClick={() => handleMetricToggle('external_debt')}> External Debt <i className="ri-arrow-right-fill"></i></th>
-              <th className={`head-metric-options ${selectedMetric === 'domestic_debt' ? 'active' : ''}`} onClick={() => handleMetricToggle('domestic_debt')}> Domestic Debt <i className="ri-arrow-right-fill"></i></th>
-              <th className={`head-metric-options ${selectedMetric === 'yearly_financing' ? 'active' : ''}`} onClick={() => handleMetricToggle('yearly_financing')}> Yearly Financing <i className="ri-arrow-right-fill"></i></th>
+              <th
+                className={`head-metric-options ${
+                  selectedMetric === "total_debt" ? "active" : ""
+                }`}
+                onClick={() => handleMetricToggle("total_debt")}
+              >
+                {" "}
+                Total External debt<i className="ri-arrow-right-fill"></i>
+              </th>
+              <th
+                className={`head-metric-options ${
+                  selectedMetric === "public_debt" ? "active" : ""
+                }`}
+                onClick={() => handleMetricToggle("public_debt")}
+              >
+                {" "}
+                Total Domestic debt <i className="ri-arrow-right-fill"></i>
+              </th>
+              <th
+                className={`head-metric-options ${
+                  selectedMetric === "external_debt" ? "active" : ""
+                }`}
+                onClick={() => handleMetricToggle("external_debt")}
+              >
+                {" "}
+                Central Government debt<i className="ri-arrow-right-fill"></i>
+              </th>
+              <th
+                className={`head-metric-options ${
+                  selectedMetric === "domestic_debt" ? "active" : ""
+                }`}
+                onClick={() => handleMetricToggle("domestic_debt")}
+              >
+                {" "}
+                Publicly Guarenteed debt <i className="ri-arrow-right-fill"></i>
+              </th>
+              <th
+                className={`head-metric-options ${
+                  selectedMetric === "yearly_financing" ? "active" : ""
+                }`}
+                onClick={() => handleMetricToggle("yearly_financing")}
+              >
+                {" "}
+                Total PPG (% of GDP) <i className="ri-arrow-right-fill"></i>
+              </th>
             </thead>
           </div>
-
-
-
-
 
           <div className="compare-countries-container">
             <div className="compare-section-container">
               <div className="compare-section-heading">
                 <div className="compare-filters-input-container">
-                  <label htmlFor="select-country">
-                    *Select a country
-                  </label>
+                  <label htmlFor="select-country">*Select a country</label>
                   <div className="compare-select">
                     <select
                       name=""
@@ -377,9 +442,11 @@ const handleClearFiltersThird = () => {
                         "''"
                       )}
                     </div>
-                  <button className="reset-btn" onClick={handleClearFilters}>Clear &nbsp; <i className="ri-restart-fill"></i></button>
+                    <button className="reset-btn" onClick={handleClearFilters}>
+                      Clear &nbsp; <i className="ri-restart-fill"></i>
+                    </button>
                   </div>
-                  
+
                   <div className="compare-select">
                     <select
                       name=""
@@ -415,7 +482,10 @@ const handleClearFiltersThird = () => {
                   <td
                     className="compare-data-total hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'total_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "total_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentData
                         ? getColorForValue(
                             currentData.total_debt,
@@ -425,7 +495,7 @@ const handleClearFiltersThird = () => {
                         : "transparent",
                     }}
                     data-country={selectedCountry} // the country name
-  data-value={currentData ? currentData.total_debt : ""} // the data value
+                    data-value={currentData ? currentData.total_debt : ""} // the data value
                   >
                     {" "}
                     {currentData ? currentData.total_debt : ""}{" "}
@@ -435,7 +505,10 @@ const handleClearFiltersThird = () => {
                   <td
                     className="compare-data-public hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'public_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "public_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentData
                         ? getColorForValue(
                             currentData.public_debt,
@@ -445,7 +518,7 @@ const handleClearFiltersThird = () => {
                         : "transparent",
                     }}
                     data-country={selectedCountry} // the country name
-  data-value={currentData ? currentData.public_debt : ""} // the data value
+                    data-value={currentData ? currentData.public_debt : ""} // the data value
                   >
                     {" "}
                     {currentData ? currentData.public_debt : ""}
@@ -455,7 +528,10 @@ const handleClearFiltersThird = () => {
                   <td
                     className="compare-data-external hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'external_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "external_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentData
                         ? getColorForValue(
                             currentData.external_debt,
@@ -465,7 +541,7 @@ const handleClearFiltersThird = () => {
                         : "transparent",
                     }}
                     data-country={selectedCountry} // the country name
-  data-value={currentData ? currentData.external_debt : ""} // the data value
+                    data-value={currentData ? currentData.external_debt : ""} // the data value
                   >
                     {" "}
                     {currentData ? currentData.external_debt : ""}
@@ -475,7 +551,10 @@ const handleClearFiltersThird = () => {
                   <td
                     className="compare-data-domestic hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'domestic_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "domestic_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentData
                         ? getColorForValue(
                             currentData.domestic_debt,
@@ -485,7 +564,7 @@ const handleClearFiltersThird = () => {
                         : "transparent",
                     }}
                     data-country={selectedCountry} // the country name
-  data-value={currentData ? currentData.domestic_debt : ""} // the data value
+                    data-value={currentData ? currentData.domestic_debt : ""} // the data value
                   >
                     {" "}
                     {currentData ? currentData.domestic_debt : ""}
@@ -495,7 +574,10 @@ const handleClearFiltersThird = () => {
                   <td
                     className="compare-data-yearly hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'yearly_financing' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "yearly_financing"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentData
                         ? getColorForValue(
                             currentData.yearly_financing,
@@ -505,7 +587,7 @@ const handleClearFiltersThird = () => {
                         : "transparent",
                     }}
                     data-country={selectedCountry} // the country name
-  data-value={currentData ? currentData.yearly_financing : ""} // the data value
+                    data-value={currentData ? currentData.yearly_financing : ""} // the data value
                   >
                     {" "}
                     {currentData ? currentData.yearly_financing : ""}
@@ -514,17 +596,10 @@ const handleClearFiltersThird = () => {
               </tbody>
             </div>
 
-
-
-
-
-
             <div className="compare-section-container">
               <div className="compare-section-heading">
                 <div className="compare-filters-input-container">
-                  <label htmlFor="select-country">
-                    *Select a country
-                  </label>
+                  <label htmlFor="select-country">*Select a country</label>
                   <div className="compare-select">
                     <select
                       name=""
@@ -557,7 +632,8 @@ const handleClearFiltersThird = () => {
                 <div className="compare-page-input-container">
                   <div className="compare-page-input">
                     <div className="flag-zip-section">
-                      {selectedCountrySecond && countryFlags[selectedCountrySecond] ? (
+                      {selectedCountrySecond &&
+                      countryFlags[selectedCountrySecond] ? (
                         <>
                           <span>{selectedCountrySecond}</span>
                           <img
@@ -569,9 +645,14 @@ const handleClearFiltersThird = () => {
                         "''"
                       )}
                     </div>
-                  <button className="reset-btn" onClick={handleClearFiltersSecond}>Clear &nbsp; <i className="ri-restart-fill"></i></button>
+                    <button
+                      className="reset-btn"
+                      onClick={handleClearFiltersSecond}
+                    >
+                      Clear &nbsp; <i className="ri-restart-fill"></i>
+                    </button>
                   </div>
-                  
+
                   <div className="compare-select">
                     <select
                       name=""
@@ -603,98 +684,137 @@ const handleClearFiltersThird = () => {
                 </div>
               </div>
               <tbody className="compare-table" id="compare-table">
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-total hover-label-cell'
+                    className="compare-data-total hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'total_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "total_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataSecond
-                        ? getColorForValue(currentDataSecond.total_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataSecond.total_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountrySecond} // the country name
-  data-value={currentDataSecond ? currentDataSecond.total_debt : ""} // the data value
+                    data-value={
+                      currentDataSecond ? currentDataSecond.total_debt : ""
+                    } // the data value
                   >
-                    {currentDataSecond ? currentDataSecond.total_debt : ''}
+                    {currentDataSecond ? currentDataSecond.total_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-public hover-label-cell'
+                    className="compare-data-public hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'public_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "public_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataSecond
-                        ? getColorForValue(currentDataSecond.public_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataSecond.public_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountrySecond} // the country name
-  data-value={currentDataSecond ? currentDataSecond.public_debt : ""} // the data value
+                    data-value={
+                      currentDataSecond ? currentDataSecond.public_debt : ""
+                    } // the data value
                   >
-                    {currentDataSecond ? currentDataSecond.public_debt : ''}
+                    {currentDataSecond ? currentDataSecond.public_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-external hover-label-cell'
+                    className="compare-data-external hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'external_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "external_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataSecond
-                        ? getColorForValue(currentDataSecond.external_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataSecond.external_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountrySecond} // the country name
-  data-value={currentDataSecond ? currentDataSecond.external_debt : ""} // the data value
+                    data-value={
+                      currentDataSecond ? currentDataSecond.external_debt : ""
+                    } // the data value
                   >
-                    {currentDataSecond ? currentDataSecond.external_debt : ''}
+                    {currentDataSecond ? currentDataSecond.external_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-domestic hover-label-cell'
+                    className="compare-data-domestic hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'domestic_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "domestic_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataSecond
-                        ? getColorForValue(currentDataSecond.domestic_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataSecond.domestic_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountrySecond} // the country name
-  data-value={currentDataSecond ? currentDataSecond.domestic_debt : ""} // the data value
+                    data-value={
+                      currentDataSecond ? currentDataSecond.domestic_debt : ""
+                    } // the data value
                   >
-                    {currentDataSecond ? currentDataSecond.domestic_debt : ''}
+                    {currentDataSecond ? currentDataSecond.domestic_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-yearly hover-label-cell'
+                    className="compare-data-yearly hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'yearly_financing' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "yearly_financing"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataSecond
-                        ? getColorForValue(currentDataSecond.yearly_financing, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataSecond.yearly_financing,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountrySecond} // the country name
-  data-value={currentDataSecond ? currentDataSecond.yearly_financing : ""} // the data value
+                    data-value={
+                      currentDataSecond
+                        ? currentDataSecond.yearly_financing
+                        : ""
+                    } // the data value
                   >
-                    {currentDataSecond ? currentDataSecond.yearly_financing : ''}
+                    {currentDataSecond
+                      ? currentDataSecond.yearly_financing
+                      : ""}
                   </td>
                 </tr>
               </tbody>
-            
             </div>
-
-
-
-
-
-
-
 
             <div className="compare-section-container-third">
               <div className="compare-section-heading">
                 <div className="compare-filters-input-container">
-                  <label htmlFor="select-country">
-                    *Select a country
-                  </label>
+                  <label htmlFor="select-country">*Select a country</label>
                   <div className="compare-select">
                     <select
                       name=""
@@ -727,7 +847,8 @@ const handleClearFiltersThird = () => {
                 <div className="compare-page-input-container">
                   <div className="compare-page-input">
                     <div className="flag-zip-section">
-                      {selectedCountryThird && countryFlags[selectedCountryThird] ? (
+                      {selectedCountryThird &&
+                      countryFlags[selectedCountryThird] ? (
                         <>
                           <span>{selectedCountryThird}</span>
                           <img
@@ -739,7 +860,12 @@ const handleClearFiltersThird = () => {
                         "''"
                       )}
                     </div>
-                  <button className="reset-btn" onClick={handleClearFiltersThird}>Clear &nbsp; <i className="ri-restart-fill"></i></button>
+                    <button
+                      className="reset-btn"
+                      onClick={handleClearFiltersThird}
+                    >
+                      Clear &nbsp; <i className="ri-restart-fill"></i>
+                    </button>
                   </div>
                   <div className="compare-select">
                     <select
@@ -772,83 +898,127 @@ const handleClearFiltersThird = () => {
                 </div>
               </div>
               <tbody className="compare-table" id="compare-table">
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-total hover-label-cell'
+                    className="compare-data-total hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'total_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "total_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataThird
-                        ? getColorForValue(currentDataThird.total_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataThird.total_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountryThird} // the country name
-  data-value={currentDataThird ? currentDataThird.total_debt : ""} // the data value
+                    data-value={
+                      currentDataThird ? currentDataThird.total_debt : ""
+                    } // the data value
                   >
-                    {currentDataThird ? currentDataThird.total_debt : ''}
+                    {currentDataThird ? currentDataThird.total_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-public hover-label-cell'
+                    className="compare-data-public hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'public_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "public_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataThird
-                        ? getColorForValue(currentDataThird.public_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataThird.public_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountryThird} // the country name
-  data-value={currentDataThird ? currentDataThird.public_debt : ""} // the data value
+                    data-value={
+                      currentDataThird ? currentDataThird.public_debt : ""
+                    } // the data value
                   >
-                    {currentDataThird ? currentDataThird.public_debt : ''}
+                    {currentDataThird ? currentDataThird.public_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-external hover-label-cell'
+                    className="compare-data-external hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'external_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "external_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataThird
-                        ? getColorForValue(currentDataThird.external_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataThird.external_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountryThird} // the country name
-  data-value={currentDataThird ? currentDataThird.external_debt : ""} // the data value
+                    data-value={
+                      currentDataThird ? currentDataThird.external_debt : ""
+                    } // the data value
                   >
-                    {currentDataThird ? currentDataThird.external_debt : ''}
+                    {currentDataThird ? currentDataThird.external_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-domestic hover-label-cell'
+                    className="compare-data-domestic hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'domestic_debt' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "domestic_debt"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataThird
-                        ? getColorForValue(currentDataThird.domestic_debt, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataThird.domestic_debt,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountryThird} // the country name
-  data-value={currentDataThird ? currentDataThird.domestic_debt : ""} // the data value
+                    data-value={
+                      currentDataThird ? currentDataThird.domestic_debt : ""
+                    } // the data value
                   >
-                    {currentDataThird ? currentDataThird.domestic_debt : ''}
+                    {currentDataThird ? currentDataThird.domestic_debt : ""}
                   </td>
                 </tr>
-                <tr className='compare-row'>
+                <tr className="compare-row">
                   <td
-                    className='compare-data-yearly hover-label-cell'
+                    className="compare-data-yearly hover-label-cell"
                     style={{
-                      display: !selectedMetric || selectedMetric === 'yearly_financing' ? 'flex' : 'none',
+                      display:
+                        !selectedMetric || selectedMetric === "yearly_financing"
+                          ? "flex"
+                          : "none",
                       backgroundColor: currentDataThird
-                        ? getColorForValue(currentDataThird.yearly_financing, minVal, maxVal)
-                        : 'transparent',
+                        ? getColorForValue(
+                            currentDataThird.yearly_financing,
+                            minVal,
+                            maxVal
+                          )
+                        : "transparent",
                     }}
                     data-country={selectedCountryThird} // the country name
-  data-value={currentDataThird ? currentDataThird.yearly_financing : ""} // the data value
+                    data-value={
+                      currentDataThird ? currentDataThird.yearly_financing : ""
+                    } // the data value
                   >
-                    {currentDataThird ? currentDataThird.yearly_financing : ''}
+                    {currentDataThird ? currentDataThird.yearly_financing : ""}
                   </td>
                 </tr>
               </tbody>
-            
             </div>
           </div>
         </div>

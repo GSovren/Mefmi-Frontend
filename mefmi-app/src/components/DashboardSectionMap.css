@@ -20,7 +20,7 @@
 
 }
 .world-map svg{
-    scale: 1.8;
+    scale: 2.1;
     transform: translate(-30px, -12px);
     cursor: grab;
     position: relative;
